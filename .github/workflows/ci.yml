@@ -1,0 +1,38 @@
+name: ci
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  push:
+    branches:
+      - main
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  upload-metrics:
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - uses: codecov/codecov-action@v4
+        with:
+          file: repo_coverage.dat
+          flags: torchscript_input_files
+          name: coverage_torchscript
+          verbose: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+          codecov_yml_path: .codecov.yml
+
+      - uses: codecov/codecov-action@v4
+        with:
+          file: on_coverage.dat
+          flags: onboard
+          name: coverage_onboard
+          verbose: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+          codecov_yml_path: .codecov.yml
+
