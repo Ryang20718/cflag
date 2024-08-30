@@ -1,4 +1,4 @@
-SF:cflag/non_example/example.py
+SF:non_example/example.py
 FNF:0
 FNH:0
 DA:1,0,ltgzJrsAH0EsmF9P3JWXNQ
@@ -46,11 +46,10 @@ DA:44,1,Kq0CtQTaRYd1kDe9xIySYA
 DA:46,1,ltgzJrsAH0EsmF9P3JWXNQ
 DA:47,1,W1LDe3wHOpHA6LhdF6r2fQ
 DA:48,1,W1LDe3wHOpHA6LhdF6r2fQ
-DA:49,1,W1LDe3wHOpHA6LhdF6r2fQ
 LH:0
 LF:44
 end_of_record
-SF:cflag/non_example/example_test.py
+SF:non_example/example_test.py
 FNF:0
 FNH:0
 DA:1,1,1B2M2Y8AsgTpgAmY7PhCfg
