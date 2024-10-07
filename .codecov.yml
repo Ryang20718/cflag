@@ -32,6 +32,7 @@ flags:
     paths:
       - example/implementation.py
       - example/implementation_test.py
+      - conflict.txt
     carryforward: false
   torchscript_input_files:
     paths:
