@@ -27,7 +27,7 @@ jobs:
 
       - uses: codecov/codecov-action@v4
         with:
-          file: onboard_av_binary_coverage.dat
+          file: json_coverage.dat #onboard_av_binary_coverage.dat
           flags: onboard_av_binary
           verbose: true
           token: ${{ secrets.CODECOV_TOKEN }}
