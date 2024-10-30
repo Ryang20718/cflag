@@ -1,7 +1,7 @@
 def hello():
     print("HELLO")
     for i in range(3):
-        print("HELLO")
+        print("HELLL")
         for i in range(3):
             print("HELLO")
             for i in range(3):
@@ -45,5 +45,5 @@ def hello3():
 
 def hello():
     print("HERE")
-    print("HERE")
-    print("HERE")
+    print("HERO")
+    print("HERO")

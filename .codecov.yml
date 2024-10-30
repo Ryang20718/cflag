@@ -7,9 +7,15 @@ github_checks:
 coverage:
   status:
     project:
-      default:
-        target: 90%
+      default:   # default is the status check's name, not default settings
+        target: auto 
+        threshold: 1
+        base: auto 
     patch:
+      default:   # default is the status check's name, not default settings
+        target: auto
+        threshold: 1
+        base: auto
       onboard_av_binary:
         target: 60%
         flags:
