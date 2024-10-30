@@ -9,13 +9,16 @@ coverage:
     project:
       default:
         target: 90%
+        if_not_found: "failure"
     patch:
       onboard_av_binary:
         target: 60%
+        if_not_found: "failure"
         flags:
           - onboard_av_binary
       torchscript_input_files:
         target: 100%
+        if_not_found: "failure"
         flags:
           - torchscript_input_files
 
