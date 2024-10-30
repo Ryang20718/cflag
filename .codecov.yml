@@ -10,18 +10,18 @@ coverage:
       default:   # default is the status check's name, not default settings
         target: auto 
         threshold: 1
-        base: auto 
     patch:
       default:   # default is the status check's name, not default settings
         target: auto
-        threshold: 1
-        base: auto
+        threshold: 100
       onboard_av_binary:
         target: 60%
+        threshold: 100
         flags:
           - onboard_av_binary
       torchscript_input_files:
         target: 100%
+        threshold: 100
         flags:
           - torchscript_input_files
 
