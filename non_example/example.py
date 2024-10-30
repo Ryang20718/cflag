@@ -44,6 +44,6 @@ def hello3():
                             print("HELLO")
 
 def hello():
-    print("HERE")
+    print("HERO")
     print("HERO")
     print("HERO")
