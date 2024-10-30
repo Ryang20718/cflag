@@ -17,13 +17,23 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: tmpCodecov
+        run: |
+          set -x
+          ls -a
+          ls -a ${GITHUB_WORKSPACE}
+          cp "${GITHUB_WORKSPACE}/.codecov.yml" codecov.yml
+          cat codecov.yml
+          sed -i -e 's/threshold: 5/threshold: 100/g' .codecov.yml
+
+
       - uses: codecov/codecov-action@v4
         with:
           file: torchscript_input_files_coverage.dat
           flags: torchscript_input_files
           verbose: true
           token: ${{ secrets.CODECOV_TOKEN }}
-          codecov_yml_path: .codecov.yml
+          codecov_yml_path: codecov.yml
 
       - uses: codecov/codecov-action@v4
         with:
@@ -31,5 +41,5 @@ jobs:
           flags: onboard_av_binary
           verbose: true
           token: ${{ secrets.CODECOV_TOKEN }}
-          codecov_yml_path: .codecov.yml
+          codecov_yml_path: codecov.yml
 

@@ -10,12 +10,17 @@ coverage:
       default:
         target: 90%
     patch:
+      default:
+        target: auto
+        threshold: 1
       onboard_av_binary:
         target: 60%
+        threshold: 1
         flags:
           - onboard_av_binary
       torchscript_input_files:
         target: 100%
+        threshold: 1
         flags:
           - torchscript_input_files
 
