@@ -17,6 +17,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # - name: modify codecov
+      #   run: |
+      #     sed 's/0.1/100/g' .github/_codecov.yml > .github/.codecov.yml
+      #     readlink -f .github.codecov.yml
+
       - uses: codecov/codecov-action@v4
         with:
           file: torchscript_input_files_coverage.dat

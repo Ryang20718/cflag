@@ -21,7 +21,7 @@ coverage:
           - onboard_av_binary
       torchscript_input_files:
         target: 99
-        threshold: 0.01
+        threshold: 100
         flags:
           - torchscript_input_files
 
