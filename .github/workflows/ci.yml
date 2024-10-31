@@ -17,35 +17,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: temp codecov
-        run: |
-          curl -Os https://cli.codecov.io/v0.8.0/linux/codecov
-          chmod +x codecov
-          ./codecov --codecov-yml-path .codecovpass.yml -v create-commit -t ${{ secrets.CODECOV_TOKEN }}
-          ./codecov --codecov-yml-path .codecovpass.yml -v create-report -t ${{ secrets.CODECOV_TOKEN }}
-          ./codecov --codecov-yml-path .codecovpass.yml -v do-upload -t ${{ secrets.CODECOV_TOKEN }} -f onboard_av_binary_coverage.dat -F onboard_av_binary
-          ./codecov --codecov-yml-path .codecovpass.yml -v do-upload -t ${{ secrets.CODECOV_TOKEN }} -f torchscript_input_files_coverage.dat -F torchscript_input_files
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-          # ./codecov --codecov-yml-path .codecovpass.yml -v empty-upload -t ${{ secrets.CODECOV_TOKEN }} --force
+      - uses: codecov/codecov-action@v4
+        with:
+          file: torchscript_input_files_coverage.dat
+          flags: torchscript_input_files
+          verbose: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+          codecov_yml_path: .codecovpass.yml
 
-          # cp .codecov.yml /tmp/codecov.yml
-          # sed -i -e 's/threshold: 0.1/threshold: 100/g' /tmp/codecov.yml
-          # cat /tmp/codecov.yml | grep threshold
-
-      # - uses: codecov/codecov-action@v4
-      #   with:
-      #     file: torchscript_input_files_coverage.dat
-      #     flags: torchscript_input_files
-      #     verbose: true
-      #     token: ${{ secrets.CODECOV_TOKEN }}
-      #     codecov_yml_path: .codecovpass.yml
-
-      # - uses: codecov/codecov-action@v4
-      #   with:
-      #     file: onboard_av_binary_coverage.dat
-      #     flags: onboard_av_binary
-      #     verbose: true
-      #     token: ${{ secrets.CODECOV_TOKEN }}
-      #     codecov_yml_path: .codecovpass.yml
+      - uses: codecov/codecov-action@v4
+        with:
+          file: onboard_av_binary_coverage.dat
+          flags: onboard_av_binary
+          verbose: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+          codecov_yml_path: .codecovpass.yml
 
