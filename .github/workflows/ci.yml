@@ -17,11 +17,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: temp codecov
-        run: |
-          cp .codecov.yml /tmp/codecov.yml
-          sed -i -e 's/threshold: 0.1/threshold: 100/g' /tmp/codecov.yml
-          cat /tmp/codecov.yml | grep threshold
+      # - name: temp codecov
+      #   run: |
+      #     curl -Os https://cli.codecov.io/v0.8.0/linux/codecov
+      #     chmod +x codecov
+      #     ./codecov -v create-commit -t ${{ secrets.CODECOV_TOKEN }}
+      #     ./codecov -v create-report -t ${{ secrets.CODECOV_TOKEN }}
+      #     ./codecov -v empty-upload -t ${{ secrets.CODECOV_TOKEN }}
+      #   env:
+      #     CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+
+          # cp .codecov.yml /tmp/codecov.yml
+          # sed -i -e 's/threshold: 0.1/threshold: 100/g' /tmp/codecov.yml
+          # cat /tmp/codecov.yml | grep threshold
 
       - uses: codecov/codecov-action@v4
         with:
