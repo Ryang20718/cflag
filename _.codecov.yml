@@ -1,0 +1,44 @@
+codecov:
+  bot: "codecov-io"
+
+github_checks:
+  annotations: true
+
+coverage:
+  status:
+    project:
+      default:
+        target: 90%
+        threshold: 0.1
+    patch:
+      onboard_av_binary:
+        target: 60%
+        threshold: 0.1
+        flags:
+          - onboard_av_binary
+      torchscript_input_files:
+        target: 100%
+        threshold: 0.1
+        flags:
+          - torchscript_input_files
+
+comment:
+  layout:  "diff, flags, files"
+  behavior: default
+  require_changes: false  
+  require_base: yes
+  require_head: yes       
+  branches: null
+
+flags:
+  onboard_av_binary:
+    paths:
+      - example/implementation.py
+      - example/implementation_test.py
+      - conflict.txt
+    carryforward: false
+  torchscript_input_files:
+    paths:
+      - non_example/example.py
+      - non_example/example_test.py
+    carryforward: false
