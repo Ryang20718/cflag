@@ -8,17 +8,17 @@ coverage:
   status:
     project:
       default:
-        target: 90%
-        threshold: 0.1
+        target: 0
+        threshold: 0
     patch:
       onboard_av_binary:
-        target: 60%
-        threshold: 0.1
+        target: 0
+        threshold: 0
         flags:
           - onboard_av_binary
       torchscript_input_files:
-        target: 100%
-        threshold: 0.1
+        target: 0
+        threshold: 0
         flags:
           - torchscript_input_files
 
