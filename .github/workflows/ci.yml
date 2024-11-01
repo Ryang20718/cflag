@@ -32,4 +32,24 @@ jobs:
           verbose: true
           token: ${{ secrets.CODECOV_TOKEN }}
           codecov_yml_path: .codecov.yml
+      
+      - name: fetch codecov results
+        run: |
+          curl --request GET \
+              --url "https://api.codecov.io/api/v2/github/waabi-ai/repos/av/report/tree?sha=${{ github.event.pull_request.head.sha }}" \
+              --header "accept: application/json" \
+              --header "authorization: Bearer ${{ secrets.CODECOV_API_TOKEN }}"
 
+      - name: fetch codecov flag results
+        run: |
+          curl --request GET \
+              --url "https://api.codecov.io/api/v2/github/waabi-ai/repos/av/report/tree??flag=onboard_av_binary&sha=${{ github.event.pull_request.head.sha }}" \
+              --header "accept: application/json" \
+              --header "authorization: Bearer ${{ secrets.CODECOV_API_TOKEN }}"
+
+      - name: fetch codecov flag results
+        run: |
+          curl --request GET \
+              --url "https://api.codecov.io/api/v2/github/waabi-ai/repos/av/report/tree??flag=torchscript_input_files&sha=${{ github.event.pull_request.head.sha }}" \
+              --header "accept: application/json" \
+              --header "authorization: Bearer ${{ secrets.CODECOV_API_TOKEN }}"
