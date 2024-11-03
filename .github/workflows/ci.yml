@@ -17,6 +17,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: run
+        continue-on-error: ${{ contains(github.event.pull_request.labels.*.name, 'codecov-bypass') || false}}
+        run: exit 1
+        
       - uses: codecov/codecov-action@v4
         with:
           file: torchscript_input_files_coverage.dat
