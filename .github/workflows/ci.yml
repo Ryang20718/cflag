@@ -17,22 +17,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: run
-        continue-on-error: ${{ contains(github.event.pull_request.labels.*.name, 'codecov-bypass') || false}}
-        run: exit 1
-        
       - uses: codecov/codecov-action@v4
         with:
-          file: torchscript_input_files_coverage.dat
-          flags: torchscript_input_files
+          file: onboard_av_binary_coverage.dat
+          flags: onboard_av_binary
           verbose: true
           token: ${{ secrets.CODECOV_TOKEN }}
           codecov_yml_path: .codecov.yml
 
       - uses: codecov/codecov-action@v4
         with:
-          file: onboard_av_binary_coverage.dat
-          flags: onboard_av_binary
+          file: torchscript_input_files_coverage.dat
+          flags: torchscript_input_files
           verbose: true
           token: ${{ secrets.CODECOV_TOKEN }}
           codecov_yml_path: .codecov.yml
