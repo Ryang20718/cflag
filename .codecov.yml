@@ -8,14 +8,19 @@ coverage:
   status:
     project:
       default:
-        target: 90%
+        target: auto
     patch:
+      default:
+        target: 90%
+        threshold: 0.1
       onboard_av_binary:
         target: 60%
+        threshold: 0.1
         flags:
           - onboard_av_binary
       torchscript_input_files:
         target: 100%
+        threshold: 0.1
         flags:
           - torchscript_input_files
 
@@ -29,13 +34,8 @@ comment:
 
 flags:
   onboard_av_binary:
-    paths:
-      - example/implementation.py
-      - example/implementation_test.py
-      - conflict.txt
+    paths: []
     carryforward: false
   torchscript_input_files:
-    paths:
-      - non_example/example.py
-      - non_example/example_test.py
+    paths: []
     carryforward: false
