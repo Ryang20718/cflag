@@ -1,3 +1,7 @@
+SF:cflag/non_example/example_test.py
+end_of_record
+SF:cflag/non_example/example.py
+end_of_record
 SF:cflag/non_example/example.py
 FNF:0
 FNH:0
@@ -56,4 +60,8 @@ FNH:0
 DA:1,1,1B2M2Y8AsgTpgAmY7PhCfg
 LH:1
 LF:1
+end_of_record
+SF:cflag/non_example/example_test.py
+end_of_record
+SF:cflag/non_example/example.py
 end_of_record
