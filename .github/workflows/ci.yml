@@ -12,7 +12,7 @@ defaults:
 jobs:
   upload-metrics:
     runs-on: ubuntu-latest
-    if: ${{ always() }}
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'codecov-bypass') }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -26,6 +26,7 @@ jobs:
           codecov_yml_path: .codecov.yml
 
       - uses: codecov/codecov-action@v4
+        if: ${{ !contains(github.event.pull_request.labels.*.name, 'codecov-bypass') }} 
         with:
           file: onboard_av_binary_coverage.dat
           flags: onboard_av_binary
@@ -33,3 +34,19 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           codecov_yml_path: .codecov.yml
 
+  coverage-bypass:
+    runs-on: ubuntu-latest
+    if: ${{ contains(github.event.pull_request.labels.*.name, 'codecov-bypass') }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: upload empty report for status checks
+        run: |
+          curl -Os https://cli.codecov.io/v0.8.0/linux/codecov
+          chmod +x codecov
+          ./codecov -v create-commit -t ${{ secrets.CODECOV_TOKEN }}
+          ./codecov -v create-report -t ${{ secrets.CODECOV_TOKEN }}
+          ./codecov -v empty-upload -t ${{ secrets.CODECOV_TOKEN }} --force
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
