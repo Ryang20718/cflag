@@ -17,19 +17,23 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - uses: codecov/codecov-action@v4
+      - name: Download coverage artifacts
+        uses: ./.github/actions/download
         with:
-          file: torchscript_input_files_coverage.dat
-          flags: torchscript_input_files
-          verbose: true
-          token: ${{ secrets.CODECOV_TOKEN }}
-          codecov_yml_path: .codecov.yml
+          workflow_id: ci.yml
+      # - uses: codecov/codecov-action@v4
+      #   with:
+      #     file: torchscript_input_files_coverage.dat
+      #     flags: torchscript_input_files
+      #     verbose: true
+      #     token: ${{ secrets.CODECOV_TOKEN }}
+      #     codecov_yml_path: .codecov.yml
 
-      - uses: codecov/codecov-action@v4
-        with:
-          file: onboard_av_binary_coverage.dat
-          flags: onboard_av_binary
-          verbose: true
-          token: ${{ secrets.CODECOV_TOKEN }}
-          codecov_yml_path: .codecov.yml
+      # - uses: codecov/codecov-action@v4
+      #   with:
+      #     file: onboard_av_binary_coverage.dat
+      #     flags: onboard_av_binary
+      #     verbose: true
+      #     token: ${{ secrets.CODECOV_TOKEN }}
+      #     codecov_yml_path: .codecov.yml
 

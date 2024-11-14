@@ -1,0 +1,33 @@
+name: download-artifacts
+description: Download and extract all build artifacts for a given workflow on a pull request
+inputs:
+  workflow_id:
+    description: workflow id or filename
+    required: true
+    default: ""
+runs:
+  using: composite
+  steps:
+
+  - uses: actions/setup-python@v5
+    with:
+      python-version: "3.11"
+      cache: "pip"
+
+  - name: Install dependencies
+    run: |
+      echo "::group::Install dependencies"
+      pip install -r ${{ github.action_path }}/requirements.txt
+      echo "::endgroup::"
+    shell: bash
+
+  - name: Download and extract build artifacts
+    run: |
+      ${{ github.action_path }}/download_artifacts.py \
+        --owner "${{ github.event.pull_request.head.repo.owner.login }}" \
+        --repo "${{ github.event.pull_request.head.repo.name }}" \
+        --commit-sha 5baf226f1282472742f995f3012a1db814fcba40 \
+        --workflow-id "${{ inputs.workflow_id }}"
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+    shell: bash
