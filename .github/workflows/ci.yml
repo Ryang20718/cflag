@@ -17,10 +17,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - uses: actions/upload-artifact@v3
+        with:
+          name: my-artifact
+          path: conflict.txt
+
       - name: Download coverage artifacts
         uses: ./.github/actions/download
         with:
           workflow_id: ci.yml
+
       # - uses: codecov/codecov-action@v4
       #   with:
       #     file: torchscript_input_files_coverage.dat

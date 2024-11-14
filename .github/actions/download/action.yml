@@ -23,10 +23,10 @@ runs:
 
   - name: Download and extract build artifacts
     run: |
-      ${{ github.action_path }}/download_artifacts.py \
+      ${{ github.action_path }}/download.py \
         --owner "${{ github.event.pull_request.head.repo.owner.login }}" \
         --repo "${{ github.event.pull_request.head.repo.name }}" \
-        --commit-sha 5baf226f1282472742f995f3012a1db814fcba40 \
+        --commit-sha a5f9c83e5c9caa3ce155d721a6a58649fbc8e3f4 \
         --workflow-id "${{ inputs.workflow_id }}"
     env:
       GITHUB_TOKEN: ${{ github.token }}

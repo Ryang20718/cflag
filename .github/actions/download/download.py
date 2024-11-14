@@ -25,8 +25,8 @@ def _main():
 
     gh = GhApi(token=github_token())
 
-    for _ in range(12):
-        time.sleep(10)
+    for _ in range(2):
+        time.sleep(2)
         if _download_artifacts_for_run(gh, args):
             break
     else:
