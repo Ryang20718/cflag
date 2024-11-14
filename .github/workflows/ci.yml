@@ -3,7 +3,7 @@ on:
   pull_request:
   push:
     branches:
-      - main
+      - user/ryang/upload
 
 defaults:
   run:
@@ -18,15 +18,19 @@ jobs:
         uses: actions/checkout@v4
 
       - uses: actions/upload-artifact@v4
+        if: github.event_name == 'pull_request'
         with:
           name: my-artifact
           path: conflict.txt
 
-      - name: Download coverage artifacts
-        uses: ./.github/actions/download
-        with:
-          workflow_id: ci.yml
+      # - name: Download coverage artifacts
+      #   uses: ./.github/actions/download
+      #   with:
+      #     workflow_id: ci.yml
 
+      # - name: Upload Onboard Av Binary Flag coverage for merge commit on base branch
+      #   run: |
+      #     ls my-artifact
       # - uses: codecov/codecov-action@v4
       #   with:
       #     file: torchscript_input_files_coverage.dat

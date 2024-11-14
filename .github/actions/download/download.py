@@ -50,12 +50,10 @@ def _download_artifact(url, filename):
 
     response = requests.get(url, headers=headers)
 
-    if response.status_code == 200:
-        with open(filename, 'wb') as f:
-            f.write(response.content)
-        print(f"Artifact downloaded successfully: {filename}")
-    else:
-        print(f"Failed to download artifact. Status code: {response.status_code}")
+    if response.status_code != 200:
+        return None
+
+    return response.content
 
 
 def _download_artifacts_for_run(gh, args):
@@ -80,13 +78,8 @@ def _download_artifacts_for_run(gh, args):
             return False
         for artifact in artifacts.artifacts:
             print("DBG", artifact, run.id)
-            _download_artifact(artifact.archive_download_url, artifact.name + ".zip")
-            data = gh.actions.download_artifact(
-                owner=args.owner,
-                repo=args.repo,
-                artifact_id=artifact.id,
-                archive_format="zip",
-            )
+            data = _download_artifact(artifact.archive_download_url, artifact.name + ".zip")
+
             _logger.info("extrating artifact: %s", artifact.name)
             zipfile.ZipFile(BytesIO(data)).extractall(path=artifact.name)
         return True

@@ -26,7 +26,7 @@ runs:
       ${{ github.action_path }}/download.py \
         --owner "${{ github.event.pull_request.head.repo.owner.login }}" \
         --repo "${{ github.event.pull_request.head.repo.name }}" \
-        --commit-sha 817523c56aadda55fb629b533d86cd81e8c9f5c6 \
+        --commit-sha 3683ae68caa052258f1c549eaf9cd404c381659d \
         --workflow-id "${{ inputs.workflow_id }}"
     env:
       GITHUB_TOKEN: ${{ github.token }}
