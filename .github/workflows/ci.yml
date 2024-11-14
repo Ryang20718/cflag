@@ -32,4 +32,50 @@ jobs:
           verbose: true
           token: ${{ secrets.CODECOV_TOKEN }}
           codecov_yml_path: .codecov.yml
+      
+      - name: fetch codecov results
+        run: |
+          curl --request GET \
+              --url "https://api.codecov.io/api/v2/github/Ryang20718/repos/cflag/report/tree?sha=${{ github.event.pull_request.head.sha }}" \
+              --header "accept: application/json" \
+              --header "authorization: Bearer ${{ secrets.CODECOV_API_TOKEN }}"
 
+      - name: fetch codecov flag results
+        run: |
+          curl --request GET \
+              --url "https://api.codecov.io/api/v2/github/Ryang20718/repos/cflag/report/tree?flag=onboard_av_binary&sha=${{ github.event.pull_request.head.sha }}" \
+              --header "accept: application/json" \
+              --header "authorization: Bearer ${{ secrets.CODECOV_API_TOKEN }}"
+
+      - name: fetch codecov flag results
+        run: |
+          curl --request GET \
+              --url "https://api.codecov.io/api/v2/github/Ryang20718/repos/cflag/report/tree?flag=torchscript_input_files&sha=${{ github.event.pull_request.head.sha }}" \
+              --header "accept: application/json" \
+              --header "authorization: Bearer ${{ secrets.CODECOV_API_TOKEN }}"
+  codecov-results:
+    runs-on: ubuntu-latest
+    needs: [upload-metrics]
+    steps:
+      - name: Sleep for 1.5min
+        run: sleep 100s
+      - name: fetch codecov results
+        run: |
+          curl --request GET \
+              --url "https://api.codecov.io/api/v2/github/Ryang20718/repos/cflag/report/tree?sha=${{ github.event.pull_request.head.sha }}" \
+              --header "accept: application/json" \
+              --header "authorization: Bearer ${{ secrets.CODECOV_API_TOKEN }}"
+
+      - name: fetch codecov flag results
+        run: |
+          curl --request GET \
+              --url "https://api.codecov.io/api/v2/github/Ryang20718/repos/cflag/report/tree?flag=onboard_av_binary&sha=${{ github.event.pull_request.head.sha }}" \
+              --header "accept: application/json" \
+              --header "authorization: Bearer ${{ secrets.CODECOV_API_TOKEN }}"
+
+      - name: fetch codecov flag results
+        run: |
+          curl --request GET \
+              --url "https://api.codecov.io/api/v2/github/Ryang20718/repos/cflag/report/tree?flag=torchscript_input_files&sha=${{ github.event.pull_request.head.sha }}" \
+              --header "accept: application/json" \
+              --header "authorization: Bearer ${{ secrets.CODECOV_API_TOKEN }}"
