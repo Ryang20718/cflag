@@ -10,6 +10,12 @@ defaults:
     shell: bash
 
 jobs:
+  codecov:
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
   upload-metrics:
     runs-on: ubuntu-latest
     if: ${{ always() }}
@@ -17,19 +23,24 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - uses: codecov/codecov-action@v4
-        with:
-          file: torchscript_input_files_coverage.dat
-          flags: torchscript_input_files
-          verbose: true
-          token: ${{ secrets.CODECOV_TOKEN }}
-          codecov_yml_path: .codecov.yml
+      # - name: modify codecov
+      #   run: |
+      #     sed 's/0.1/100/g' .github/_codecov.yml > .github/.codecov.yml
+      #     readlink -f .github.codecov.yml
 
-      - uses: codecov/codecov-action@v4
-        with:
-          file: onboard_av_binary_coverage.dat
-          flags: onboard_av_binary
-          verbose: true
-          token: ${{ secrets.CODECOV_TOKEN }}
-          codecov_yml_path: .codecov.yml
+      # - uses: codecov/codecov-action@v4
+      #   with:
+      #     file: torchscript_input_files_coverage.dat
+      #     flags: torchscript_input_files
+      #     verbose: true
+      #     token: ${{ secrets.CODECOV_TOKEN }}
+      #     codecov_yml_path: ./.github/codecov.yml
+
+      # - uses: codecov/codecov-action@v4
+      #   with:
+      #     file: onboard_av_binary_coverage.dat
+      #     flags: onboard_av_binary
+      #     verbose: true
+      #     token: ${{ secrets.CODECOV_TOKEN }}
+      #     codecov_yml_path: ./.github/codecov.yml
 

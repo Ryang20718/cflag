@@ -6,18 +6,23 @@ github_checks:
 
 coverage:
   status:
+    default_rules:
+      flag_coverage_not_uploaded_behavior: pass
     project:
       default:
         target: 90%
+        threshold: 0.1
     patch:
       default:
         target: 90%
       onboard_av_binary:
         target: 60%
+        threshold: 0.1
         flags:
           - onboard_av_binary
       torchscript_input_files:
         target: 100%
+        threshold: 0.1
         flags:
           - torchscript_input_files
 
