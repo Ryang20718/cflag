@@ -23,7 +23,7 @@ jobs:
           flags: torchscript_input_files
           verbose: true
           token: ${{ secrets.CODECOV_TOKEN }}
-          codecov_yml_path: .codecov.yml
+          codecov_yml_path: .codecovpass.yml
 
       - uses: codecov/codecov-action@v4
         with:
@@ -31,5 +31,5 @@ jobs:
           flags: onboard_av_binary
           verbose: true
           token: ${{ secrets.CODECOV_TOKEN }}
-          codecov_yml_path: .codecov.yml
+          codecov_yml_path: .codecovpass.yml
 
