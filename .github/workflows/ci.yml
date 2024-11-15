@@ -3,7 +3,7 @@ on:
   pull_request:
   push:
     branches:
-      - main
+      - user/ryang/upload
 
 defaults:
   run:
@@ -17,19 +17,33 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - uses: codecov/codecov-action@v4
+      - uses: actions/upload-artifact@v4
+        if: github.event_name == 'pull_request'
         with:
-          file: torchscript_input_files_coverage.dat
-          flags: torchscript_input_files
-          verbose: true
-          token: ${{ secrets.CODECOV_TOKEN }}
-          codecov_yml_path: .codecov.yml
+          name: my-artifact
+          path: conflict.txt
 
-      - uses: codecov/codecov-action@v4
-        with:
-          file: onboard_av_binary_coverage.dat
-          flags: onboard_av_binary
-          verbose: true
-          token: ${{ secrets.CODECOV_TOKEN }}
-          codecov_yml_path: .codecov.yml
+      # - name: Download coverage artifacts
+      #   uses: ./.github/actions/download
+      #   with:
+      #     workflow_id: ci.yml
+
+      # - name: Upload Onboard Av Binary Flag coverage for merge commit on base branch
+      #   run: |
+      #     ls my-artifact
+      # - uses: codecov/codecov-action@v4
+      #   with:
+      #     file: torchscript_input_files_coverage.dat
+      #     flags: torchscript_input_files
+      #     verbose: true
+      #     token: ${{ secrets.CODECOV_TOKEN }}
+      #     codecov_yml_path: .codecov.yml
+
+      # - uses: codecov/codecov-action@v4
+      #   with:
+      #     file: onboard_av_binary_coverage.dat
+      #     flags: onboard_av_binary
+      #     verbose: true
+      #     token: ${{ secrets.CODECOV_TOKEN }}
+      #     codecov_yml_path: .codecov.yml
 
