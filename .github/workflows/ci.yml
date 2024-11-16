@@ -16,14 +16,21 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        fetch-depth: 0
+        with:
+          fetch-depth: 0
+
+      - name: Get SHA ancestor to origin/main
+        run: |
+          git fetch origin main
+          git merge-base origin/main HEAD
+          echo "SHA_ANCESTOR=$(git merge-base origin/main HEAD)" >> $GITHUB_ENV
 
       - uses: codecov/codecov-action@v4
         with:
           file: torchscript_input_files_coverage.dat
           flags: torchscript_input_files
           verbose: true
-          commit_parent: ${{ github.event.pull_request.merge_commit_sha }}
+          commit_parent: ${{ env.SHA_ANCESTOR }}
           token: ${{ secrets.CODECOV_TOKEN }}
           codecov_yml_path: .codecov.yml
 
@@ -32,7 +39,7 @@ jobs:
           file: onboard_av_binary_coverage.dat
           flags: onboard_av_binary
           verbose: true
-          commit_parent: ${{ github.event.pull_request.merge_commit_sha }}
+          commit_parent: ${{ env.SHA_ANCESTOR }}
           token: ${{ secrets.CODECOV_TOKEN }}
           codecov_yml_path: .codecov.yml
 
