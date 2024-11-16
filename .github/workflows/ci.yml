@@ -16,6 +16,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        fetch-depth: 0
 
       - uses: codecov/codecov-action@v4
         with:
