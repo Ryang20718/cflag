@@ -1,0 +1,32 @@
+name: "Get PR Has Label"
+description: "Check if the PR has a particular label"
+inputs:
+  check_label:
+    required: true
+  GITHUB_TOKEN:
+    required: true
+  OWNER:
+    required: true
+  REPO_NAME:
+    required: true
+  PULL_REQUEST_NUMBER:
+    required: true
+outputs:
+  contains_label:
+    description: Whether the PR has the label, returns "true" or "false"
+    value: ${{ steps.get_pr_labels.outputs.contains_label }}
+runs:
+  using: "composite"
+  steps:
+    - name: Get PR Labels
+      id: get_pr_labels
+      shell: bash
+      run: |
+        contains_label="$(gh api repos/${{ inputs.owner }}/${{ inputs.repo_name }}/pulls/${{ inputs.pull_request_number }} --jq '.labels | map(select(.name == "${{inputs.check_label}}")) | length > 0')"
+        echo "contains_label=$contains_label" >> $GITHUB_OUTPUT
+        echo "contains_label=$contains_label"
+      env:
+        GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
+        OWNER: ${{ inputs.OWNER }}
+        REPO_NAME: ${{ inputs.REPO_NAME }}
+        PULL_REQUEST_NUMBER: ${{ inputs.PULL_REQUEST_NUMBER }}
