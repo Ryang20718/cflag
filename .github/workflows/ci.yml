@@ -17,6 +17,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Print labels
+        run: |
+          echo "${{ toJSON(github.event.pull_request.labels.*.name) }}"
+
+      - run: |
+          labels="$(gh api repos/$OWNER/$REPO_NAME/pulls/$PULL_REQUEST_NUMBER --jq '.labels.[].name')"
+          echo "$labels"
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OWNER: ${{ github.repository_owner }}
+          REPO_NAME: ${{ github.event.repository.name }}
+          PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
+
       - uses: codecov/codecov-action@v4
         with:
           file: torchscript_input_files_coverage.dat
@@ -36,12 +50,21 @@ jobs:
 
   coverage-bypass:
     runs-on: ubuntu-latest
-    if: ${{ contains(github.event.pull_request.labels.*.name, 'codecov-bypass') }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        
+      - name: Get Pr Labels
+        id: get-pr-labels
+        run: |
+          codecov_bypass="$(gh api repos/$OWNER/$REPO_NAME/pulls/$PULL_REQUEST_NUMBER --jq '.labels | map(select(.name == "codecov-bypass")) | length > 0')"
+          echo "codecov_bypass=$codecov_bypass" >> $GITHUB_OUTPUT
+          echo "codecov_bypass=$codecov_bypass"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OWNER: ${{ github.repository_owner }}
+          REPO_NAME: ${{ github.event.repository.name }}
+          PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
+
       - name: upload empty report for status checks
+        if: ${{ steps.get-pr-labels.outputs.codecov_bypass == 'true' }}
         run: |
           curl -Os https://cli.codecov.io/v0.8.0/linux/codecov
           chmod +x codecov
