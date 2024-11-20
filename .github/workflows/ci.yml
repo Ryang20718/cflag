@@ -45,8 +45,8 @@ jobs:
         run: |
           curl -Os https://cli.codecov.io/v0.8.0/linux/codecov
           chmod +x codecov
-          ./codecov -v create-commit -t ${{ secrets.CODECOV_TOKEN }}
-          ./codecov -v create-report -t ${{ secrets.CODECOV_TOKEN }}
-          ./codecov -v empty-upload -t ${{ secrets.CODECOV_TOKEN }} --force
+          ./codecov -v create-commit -t ${{ secrets.CODECOV_TOKEN }} -C ${{ github.event.pull_request.head.sha }}
+          ./codecov -v create-report -t ${{ secrets.CODECOV_TOKEN }} -C ${{ github.event.pull_request.head.sha }}
+          ./codecov -v empty-upload -t ${{ secrets.CODECOV_TOKEN }} --force -C ${{ github.event.pull_request.head.sha }}
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
