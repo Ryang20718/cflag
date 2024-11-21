@@ -16,20 +16,32 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - uses: codecov/codecov-action@v4
         with:
-          file: torchscript_input_files_coverage.dat
+          fetch-depth: 0
+
+      - name: Get SHA ancestor to origin/main
+        run: |
+          git fetch origin main
+          git merge-base origin/main HEAD
+          echo "SHA_ANCESTOR=$(git merge-base origin/main HEAD)" >> $GITHUB_ENV
+          echo "merge sha ${{ github.event.pull_request.merge_commit_sha }}"
+          echo "base ${{ github.event.pull_request.base.ref }}"
+
+      - uses: codecov/codecov-action@v5
+        with:
+          files: torchscript_input_files_coverage.dat
           flags: torchscript_input_files
           verbose: true
+          commit_parent: de19c68b335e6e17e1e5b3204935d3c5e5d5b716 #${{ github.event.pull_request.merge_commit_sha }} # ${{ env.SHA_ANCESTOR }} # 
           token: ${{ secrets.CODECOV_TOKEN }}
-          codecov_yml_path: .codecov.yml
+          # codecov_yml_path: .codecov.yml
 
-      - uses: codecov/codecov-action@v4
+      - uses: codecov/codecov-action@v5
         with:
-          file: onboard_av_binary_coverage.dat
+          files: onboard_av_binary_coverage.dat
           flags: onboard_av_binary
           verbose: true
+          commit_parent: de19c68b335e6e17e1e5b3204935d3c5e5d5b716 #${{ github.event.pull_request.merge_commit_sha }} # ${{ env.SHA_ANCESTOR }} #
           token: ${{ secrets.CODECOV_TOKEN }}
-          codecov_yml_path: .codecov.yml
+          # codecov_yml_path: .codecov.yml
 
