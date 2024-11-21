@@ -32,7 +32,7 @@ jobs:
           files: torchscript_input_files_coverage.dat
           flags: torchscript_input_files
           verbose: true
-          commit_parent: ${{ github.event.pull_request.merge_commit_sha }} # ${{ env.SHA_ANCESTOR }} # 
+          commit_parent: de19c68b335e6e17e1e5b3204935d3c5e5d5b716 #${{ github.event.pull_request.merge_commit_sha }} # ${{ env.SHA_ANCESTOR }} # 
           token: ${{ secrets.CODECOV_TOKEN }}
           # codecov_yml_path: .codecov.yml
 
@@ -41,7 +41,7 @@ jobs:
           files: onboard_av_binary_coverage.dat
           flags: onboard_av_binary
           verbose: true
-          commit_parent: ${{ github.event.pull_request.merge_commit_sha }} # ${{ env.SHA_ANCESTOR }} #
+          commit_parent: de19c68b335e6e17e1e5b3204935d3c5e5d5b716 #${{ github.event.pull_request.merge_commit_sha }} # ${{ env.SHA_ANCESTOR }} #
           token: ${{ secrets.CODECOV_TOKEN }}
           # codecov_yml_path: .codecov.yml
 
