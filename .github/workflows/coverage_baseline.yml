@@ -1,0 +1,48 @@
+name: report code coverage baseline
+on:
+  pull_request:
+    types: [closed]
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  coverage-upload:
+    if: github.event.pull_request.merged
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v2
+
+      - name: Download coverage artifacts
+        uses: ./.github/actions/download_artifacts
+        with:
+          workflow_id: ci.yml
+
+      - uses: codecov/codecov-action@v4
+        with:
+          file: torchscript_input_files_coverage.dat
+          flags: torchscript_input_files
+          override_branch: "${{ github.event.pull_request.base.ref }}"
+          override_commit: "${{ github.event.pull_request.merge_commit_sha }}"
+          override_pr: " "
+          verbose: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+          codecov_yml_path: .codecov.yml
+          disable_search: true # to prevent codecov from uploading any extra unrelated coverage files
+          fail_ci_if_error: true
+
+      - name: Upload Project coverage to codecov for merge commit on base branch
+        uses: codecov/codecov-action@v4
+        with:
+          file: onboard_av_binary_coverage.dat
+          flags: onboard_av_binary
+          verbose: true
+          override_branch: "${{ github.event.pull_request.base.ref }}"
+          override_commit: "${{ github.event.pull_request.merge_commit_sha }}"
+          override_pr: " "
+          token: ${{ secrets.CODECOV_TOKEN }}
+          codecov_yml_path: .codecov.yml
+          disable_search: true # to prevent codecov from uploading any extra unrelated coverage files
+          fail_ci_if_error: true
