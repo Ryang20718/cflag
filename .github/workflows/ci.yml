@@ -24,6 +24,7 @@ jobs:
           sha="${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}"
           ./codecov --auto-load-params-from=GithubActions --codecov-yml-path .codecov.yml -v create-commit --slug="${{ github.repository }}" --sha="${sha}" --git-service github -t ${{ secrets.CODECOV_TOKEN }}
           ./codecov --auto-load-params-from=GithubActions --codecov-yml-path .codecov.yml -v create-report --slug="${{ github.repository }}" --sha="${sha}" --git-service github -t ${{ secrets.CODECOV_TOKEN }}
+          ./codecov --auto-load-params-from=GithubActions --codecov-yml-path .codecov.yml -v pr-base-picking --slug="${{ github.repository }}" --base-sha="de19c68b335e6e17e1e5b3204935d3c5e5d5b716" --service github -t ${{ secrets.CODECOV_TOKEN }}
           ./codecov --auto-load-params-from=GithubActions --codecov-yml-path .codecov.yml -v do-upload --slug="${{ github.repository }}" --sha="${sha}" -f torchscript_input_files_coverage.dat -F torchscript_input_files --git-service github -t ${{ secrets.CODECOV_TOKEN }} 
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
@@ -35,6 +36,7 @@ jobs:
           sha="${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}"
           ./codecov --auto-load-params-from=GithubActions --codecov-yml-path .codecov.yml -v create-commit --slug="${{ github.repository }}" --sha="${sha}" --git-service github -t ${{ secrets.CODECOV_TOKEN }}
           ./codecov --auto-load-params-from=GithubActions --codecov-yml-path .codecov.yml -v create-report --slug="${{ github.repository }}" --sha="${sha}" --git-service github -t ${{ secrets.CODECOV_TOKEN }}
+          ./codecov --auto-load-params-from=GithubActions --codecov-yml-path .codecov.yml -v pr-base-picking --slug="${{ github.repository }}" --base-sha="de19c68b335e6e17e1e5b3204935d3c5e5d5b716" --service github -t ${{ secrets.CODECOV_TOKEN }}
           ./codecov --auto-load-params-from=GithubActions --codecov-yml-path .codecov.yml -v do-upload --slug="${{ github.repository }}" --sha="${sha}" -f onboard_av_binary_coverage.dat -F onboard_av_binary --git-service github -t ${{ secrets.CODECOV_TOKEN }}
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
