@@ -1,0 +1,33 @@
+name: Code Coverage Upload
+description: Uploads Code Coverage to Codecov using the merged base as the base commit
+
+inputs:
+  files:
+    description: Path to coverage lcov file(s) - comma separated for multiple files
+    required: true
+  token:
+    description: The codecov token
+    required: true
+  flag:
+    description: Flag Name
+    required: false
+
+runs:
+  using: composite
+  steps:
+    - name: Download Codecov Cli
+      shell: bash
+      run: |
+        echo "codecov=$(which codecovcli)" >> "${GITHUB_OUTPUT}"
+        
+    - name: Upload Coverage and Test Results
+      continue-on-error: true
+      shell: bash
+      env:
+        INPUT_TOKEN: ${{ inputs.token }}
+        INPUT_COMMIT_SHA: ${{ inputs.commit_sha }}
+        INPUT_TYPE: ${{ inputs.type }}
+        INPUT_FILES: ${{ inputs.files }}
+        INPUT_TEST_RESULT_FILES: ${{ inputs.test_result_files }}
+      run: |
+        ./.github/actions/artifacts/do_upload.py
