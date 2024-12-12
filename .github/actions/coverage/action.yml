@@ -18,16 +18,61 @@ runs:
     - name: Download Codecov Cli
       shell: bash
       run: |
-        echo "codecov=$(which codecovcli)" >> "${GITHUB_OUTPUT}"
+        curl -Os https://cli.codecov.io/v0.8.0/linux/codecov
+        chmod +x codecov
         
     - name: Upload Coverage and Test Results
-      continue-on-error: true
       shell: bash
       env:
-        INPUT_TOKEN: ${{ inputs.token }}
-        INPUT_COMMIT_SHA: ${{ inputs.commit_sha }}
-        INPUT_TYPE: ${{ inputs.type }}
-        INPUT_FILES: ${{ inputs.files }}
-        INPUT_TEST_RESULT_FILES: ${{ inputs.test_result_files }}
+        CODECOV_TOKEN: ${{ inputs.token }}
+        FILES: ${{ inputs.files }}
+        FLAG: ${{ inputs.flag }}
       run: |
-        ./.github/actions/artifacts/do_upload.py
+        shared_flags="--auto-load-params-from=GithubActions --codecov-yml-path=.codecov.yml -v"
+        sha="${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}"
+        file=()
+        for f in ${FILES}; do
+          file+=("--file=${f}")
+        done
+
+        flag=()
+        for f in ${FLAG}; do
+          flag+=("--flag=${f}")
+        done
+
+        ./codecov \
+          ${shared_flags} \
+          create-commit \
+          --slug="${{ github.repository }}" \
+          --sha="${sha}" \
+          --git-service github \
+          -t ${CODECOV_TOKEN}
+
+        ./codecov \
+          ${shared_flags} \
+          create-report \
+          --slug="${{ github.repository }}" \
+          --sha="${sha}" \
+          --git-service github \
+          -t ${CODECOV_TOKEN}
+
+        if [ "${{ github.event_name }}" == "pull_request" ]; then
+          # If the event is a pull request, we need to pick the base commit
+          # Codecov-action does not support this, so we need to use the cli
+          ./codecov \
+            ${shared_flags} \
+            pr-base-picking \
+            --slug="${{ github.repository }}" \
+            --base-sha="${{ github.event.pull_request.base.sha }}" \
+            --service github \
+            -t ${CODECOV_TOKEN}
+        fi
+        ./codecov \
+          ${shared_flags} \
+          do-upload \
+          --slug="${{ github.repository }}" \
+          --sha="${sha}" \
+          ${file[@]+"${file[@]}"} \
+          ${flag[@]+"${flag[@]}"} \
+          --git-service github \
+          -t ${CODECOV_TOKEN}
