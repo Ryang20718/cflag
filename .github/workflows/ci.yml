@@ -19,7 +19,7 @@ jobs:
 
       - name: upload coverage via cli
         run: |
-          curl -Os https://cli.codecov.io/v0.7.4/linux/codecov
+          curl -Os https://cli.codecov.io/v0.8.0/linux/codecov
           chmod +x codecov
           sha="${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}"
           ./codecov --auto-load-params-from=GithubActions --codecov-yml-path .codecov.yml -v create-commit --slug="${{ github.repository }}" --sha="${sha}" --git-service github -t ${{ secrets.CODECOV_TOKEN }}
@@ -31,7 +31,7 @@ jobs:
 
       - name: upload coverage via cli
         run: |
-          curl -Os https://cli.codecov.io/v0.7.4/linux/codecov
+          curl -Os https://cli.codecov.io/v0.8.0/linux/codecov
           chmod +x codecov
           sha="${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}"
           ./codecov --auto-load-params-from=GithubActions --codecov-yml-path .codecov.yml -v create-commit --slug="${{ github.repository }}" --sha="${sha}" --git-service github -t ${{ secrets.CODECOV_TOKEN }}
