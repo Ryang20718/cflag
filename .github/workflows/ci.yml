@@ -17,19 +17,35 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - uses: codecov/codecov-action@v4
-        with:
-          file: torchscript_input_files_coverage.dat
-          flags: torchscript_input_files
-          verbose: true
-          token: ${{ secrets.CODECOV_TOKEN }}
-          codecov_yml_path: .codecov.yml
+      - name: upload coverage via cli
+        run: |
+          curl -Os https://cli.codecov.io/v0.8.0/linux/codecov
+          chmod +x codecov
+          ./codecov --verbose upload-process --disable-search --fail-on-error -t ${{ secrets.CODECOV_TOKEN }} -F torchscript_input_files -f torchscript_input_files_coverage.dat 
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+# --parent-sha de19c68b335e6e17e1e5b3204935d3c5e5d5b716
+      - name: upload coverage via cli
+        run: |
+          curl -Os https://cli.codecov.io/v0.8.0/linux/codecov
+          chmod +x codecov
+          ./codecov --verbose upload-process --disable-search --fail-on-error -t ${{ secrets.CODECOV_TOKEN }} -F onboard_av_binary -f onboard_av_binary_coverage.dat
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
-      - uses: codecov/codecov-action@v4
-        with:
-          file: onboard_av_binary_coverage.dat
-          flags: onboard_av_binary
-          verbose: true
-          token: ${{ secrets.CODECOV_TOKEN }}
-          codecov_yml_path: .codecov.yml
+      # - uses: codecov/codecov-action@v4
+      #   with:
+      #     file: torchscript_input_files_coverage.dat
+      #     flags: torchscript_input_files
+      #     verbose: true
+      #     token: ${{ secrets.CODECOV_TOKEN }}
+      #     codecov_yml_path: .codecov.yml
+
+      # - uses: codecov/codecov-action@v4
+      #   with:
+      #     file: onboard_av_binary_coverage.dat
+      #     flags: onboard_av_binary
+      #     verbose: true
+      #     token: ${{ secrets.CODECOV_TOKEN }}
+      #     codecov_yml_path: .codecov.yml
 
