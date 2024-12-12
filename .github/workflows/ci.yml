@@ -25,6 +25,7 @@ jobs:
           ./codecov --auto-load-params-from=GithubActions --codecov-yml-path .codecov.yml -v create-report --git-service github -t ${{ secrets.CODECOV_TOKEN }}
           ./codecov --auto-load-params-from=GithubActions --codecov-yml-path .codecov.yml -v do-upload -f torchscript_input_files_coverage.dat -F torchscript_input_files --git-service github -t ${{ secrets.CODECOV_TOKEN }}
           ./codecov --auto-load-params-from=GithubActions --codecov-yml-path .codecov.yml -v create-report-results --git-service github -t ${{ secrets.CODECOV_TOKEN }}
+          ./codecov --auto-load-params-from=GithubActions --codecov-yml-path .codecov.yml -v get-report-results --git-service github -t ${{ secrets.CODECOV_TOKEN }}
           ./codecov --auto-load-params-from=GithubActions --codecov-yml-path .codecov.yml -v send-notifications --git-service github -t ${{ secrets.CODECOV_TOKEN }}
 
         env:
@@ -38,6 +39,7 @@ jobs:
           ./codecov --auto-load-params-from=GithubActions --codecov-yml-path .codecov.yml -v create-report --git-service github -t ${{ secrets.CODECOV_TOKEN }}
           ./codecov --auto-load-params-from=GithubActions --codecov-yml-path .codecov.yml -v do-upload -f onboard_av_binary_coverage.dat -F onboard_av_binary --git-service github -t ${{ secrets.CODECOV_TOKEN }}
           ./codecov --auto-load-params-from=GithubActions --codecov-yml-path .codecov.yml -v create-report-results --git-service github -t ${{ secrets.CODECOV_TOKEN }}
+          ./codecov --auto-load-params-from=GithubActions --codecov-yml-path .codecov.yml -v get-report-results --git-service github -t ${{ secrets.CODECOV_TOKEN }}
           ./codecov --auto-load-params-from=GithubActions --codecov-yml-path .codecov.yml -v send-notifications --git-service github -t ${{ secrets.CODECOV_TOKEN }}
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
