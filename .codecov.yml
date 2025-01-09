@@ -35,9 +35,9 @@ flags:
       - example/implementation.py
       - example/implementation_test.py
       - conflict.txt
-    carryforward: false
+    carryforward: true
   torchscript_input_files:
     paths:
       - non_example/example.py
       - non_example/example_test.py
-    carryforward: false
+    carryforward: true
