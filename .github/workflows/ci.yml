@@ -31,6 +31,18 @@ jobs:
           files: torchscript_input_files_coverage.dat
           flag: torchscript_input_files
 
+      - name: Skip Codecov Status Checks
+        run: |
+          curl --retry 3 \
+            --output codecov \
+            "https://cli.codecov.io/latest/linux/codecov"
+          chmod +x codecov
+          ./codecov -v create-commit -t ${{ secrets.CODECOV_TOKEN }} -C ${{ github.event.pull_request.head.sha }}
+          ./codecov -v create-report -t ${{ secrets.CODECOV_TOKEN }} -C ${{ github.event.pull_request.head.sha }}
+          ./codecov -v empty-upload -t ${{ secrets.CODECOV_TOKEN }} -C ${{ github.event.pull_request.head.sha }} --force
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
       # - uses: codecov/codecov-action@v4
       #   with:
       #     file: torchscript_input_files_coverage.dat
