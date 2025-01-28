@@ -1,0 +1,5 @@
+fastcore==1.7.19
+ghapi==1.0.6
+packaging==20.9
+pyparsing==2.4.7
+requests==2.32.3
