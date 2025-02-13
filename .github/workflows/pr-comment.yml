@@ -1,7 +1,6 @@
 name: check-comment
 on:
-  issue_comment:
-    types: [created, deleted]
+  pull_request:
 
 jobs:
   _check-release-notes-labels:
@@ -14,6 +13,16 @@ jobs:
         with:
           lfs: true
           
-      - name: hello
-        run: echo 'hello'
-        shell: bash
+      - name: Generate AV Release Bot github app token
+        id: app-token2
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.RELEASE_BOT_ID }}
+          private-key: ${{ secrets.RELEASE_BOT_PRIVATE_KEY }}
+
+      - name: Create github release and tag
+        env:
+          GH_TOKEN: ${{ steps.app-token2.outputs.token }}
+        run: |
+          gh release create --prerelease --title test01 --draft --target 69d250b9f456c451974733572ba9f23b84e71761 "test_tag"
+
