@@ -2,9 +2,7 @@ name: Check Run Trigger
 
 on:
   check_run:
-    types: [completed]
   check_suite:
-    types: [completed]
 
 jobs:
   check_run_job:
