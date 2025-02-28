@@ -1,21 +1,18 @@
-name: Run-on-ThirdParty-Check
-
-
+name: Check Run Trigger
 
 on:
+  pull_request:
   check_run:
+    type: [created, rerequested, completed]
+  check_suite:
     types: [completed]
-    if: ${{ github.check_run.name == 'codecov/project' }} 
-
 
 jobs:
-  build:
+  check_run_job:
     runs-on: ubuntu-latest
     steps:
-      - name: Run custom script based on check status
-        run: |
-          if [ "${{ github.check_run.conclusion }}" == 'success' ]; then
-            echo "Third-party check passed, proceed with deployment"
-          else
-            echo "Third-party check failed, stop workflow"
-          fi
+      - name: Print event details
+        run: echo "Triggered by check_run event for ${{ github.event.check_run.name }} with status ${{ github.event.check_run.conclusion }}"
+      
+      - name: Print full event payload
+        run: echo '${{ toJson(github.event) }}'
