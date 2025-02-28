@@ -9,7 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Print event details
-        run: echo "Triggered by check_run event for ${{ github.event.check_run.name }} with status ${{ github.event.check_run.conclusion }}"
-      
+        run: |
+          echo "Check Name: ${{ github.event.check_suite.app.name }}"
+          echo "PR Number: ${{ github.event.check_suite.pull_requests[0].number }}"
+          echo "Status: ${{ github.event.check_suite.conclusion }}"
+    
       - name: Print full event payload
         run: echo '${{ toJson(github.event) }}'
