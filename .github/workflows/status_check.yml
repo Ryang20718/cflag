@@ -1,8 +1,8 @@
 name: Check Run Trigger
 
 on:
-  check_run:
   check_suite:
+    types: [completed]
 
 jobs:
   check_run_job:
