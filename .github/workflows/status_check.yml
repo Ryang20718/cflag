@@ -4,52 +4,54 @@ name: Codecov PR Status Checks
 # This workflow is triggered for each 3rd party check run completion.
 # in this workflow, we post a comment to the PR with useful guidance on how to navigate the failed check
 on:
-  check_run:
-    types: [completed]
+  pull_request:
+  # check_run:
+  #   types: [completed]
 
 jobs:
   check_codecov:
-    if: contains(github.event.check_run.name, 'codecov') && github.event.check_run.conclusion != 'success'
+    # if: contains(github.event.check_run.name, 'codecov') && github.event.check_run.conclusion != 'success'
     runs-on: ubuntu-latest
     steps:
-      - name: Print event details
-        run: |
-          echo "Check Name: ${{ github.event.check_run.name }}"
-          echo "Status: ${{ github.event.check_run.conclusion }}"
-          echo "PR Number: ${{ github.event.check_run.check_suite.pull_requests[0].number }}"
+      # - name: Print event details
+      #   run: |
+      #     echo "Check Name: ${{ github.event.check_run.name }}"
+      #     echo "Status: ${{ github.event.check_run.conclusion }}"
+      #     echo "PR Number: ${{ github.event.check_run.check_suite.pull_requests[0].number }}"
 
       - name: Check if comment exists and add if missing
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          CODECOV_STATUS="Codecov status check has failed."
           COMMENT_BODY="
-          Codecov status check has failed.
+          $CODECOV_STATUS
 
           <details>
             <summary>If you have not yet logged in to codecov</summary>
-            Please do so via [here](test).
+            Please do so via [here](https://github.com/Ryang20718/cflag/pull/49).
           </details>
 
           <details>
             <summary>If codecov project/patch status checks are failing, here are some tips to resolve those errors!</summary>
-            Please ensure your changes are tested :smile.
+            Please ensure your changes are tested https://github.githubassets.com/images/icons/emoji/unicode/1f53b.png?v8 :smile:
 
-            There are some known limitations with codecov documented
-            [here](test).
+            There are some known limitations with codecov documented [here](https://github.com/Ryang20718/cflag/pull/49).
 
-            If you believe this is a false positive and none of the suggestions above help, please add the label `codecov-bypass` to the PR.
+            If you believe this is a false positive and none of the suggestions above help, please add the label 'codecov-bypass' to the PR.
 
             For any additional features/concerns, please reach out to #tools-help on slack!
           </details>
           "
-          PR_NUMBER=${{ github.event.check_run.check_suite.pull_requests[0].number }}
+          #PR_NUMBER=${{ github.event.check_run.check_suite.pull_requests[0].number }}
+          PR_NUMBER=49
           REPO=${{ github.repository }}
 
           # Fetch existing comments
           COMMENTS=$(gh pr view $PR_NUMBER --repo $REPO --json comments --jq '.comments[].body')
 
           # Check if the comment already exists
-          if echo "$COMMENTS" | grep -qF "$COMMENT_BODY"; then
+          if echo "$COMMENTS" | grep -qF "$CODECOV_STATUS"; then
             echo "Comment already exists, skipping."
           else
             echo "Adding comment to PR..."
