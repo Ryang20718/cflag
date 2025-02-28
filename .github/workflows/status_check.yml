@@ -37,7 +37,7 @@ jobs:
             There are some known limitations with codecov documented
             [here](test).
 
-            If you believe this is a false positive and none of the suggestions above help, please add the label `codecov-bypass` to the PR.
+            If you believe this is a false positive and none of the suggestions above help, please add the label "codecov-bypass" to the PR.
 
             For any additional features/concerns, please reach out to #tools-help on slack!
           </details>
