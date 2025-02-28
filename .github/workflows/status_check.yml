@@ -6,7 +6,7 @@ on:
 
 jobs:
   check_run_job:
-    # if: contains(github.event.check_run.name, 'codecov') && github.event.check_run.conclusion != 'success'
+    if: contains(github.event.check_run.name, 'codecov') && github.event.check_run.conclusion != 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Print event details
@@ -14,7 +14,23 @@ jobs:
           echo "Check Name: ${{ github.event.check_run.name }}"
           echo "Status: ${{ github.event.check_run.conclusion }}"
           echo "PR Number: ${{ github.event.check_run.check_suite.pull_requests[0].number }}"
-          echo "DBG ${{ github.event.check_run }}"
     
+      - name: Check if comment exists and add if missing
+        run: |
+          COMMENT_BODY="Automated message: This PR is being processed."
+          PR_NUMBER=${{ github.event.check_run.check_suite.pull_requests[0].number }}
+          REPO=${{ github.repository }}
+
+          # Fetch existing comments
+          COMMENTS=$(gh pr view $PR_NUMBER --repo $REPO --json comments --jq '.comments[].body')
+
+          # Check if the comment already exists
+          if echo "$COMMENTS" | grep -qF "$COMMENT_BODY"; then
+            echo "Comment already exists, skipping."
+          else
+            echo "Adding comment to PR..."
+            gh pr comment $PR_NUMBER --repo $REPO --body "$COMMENT_BODY"
+          fi
+
       - name: Print full event payload
         run: echo '${{ toJson(github.event) }}'
