@@ -1,0 +1,21 @@
+name: Run-on-ThirdParty-Check
+
+
+
+on:
+  check_run:
+    types: [completed]
+    if: ${{ github.check_run.name == 'codecov/project' }} 
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run custom script based on check status
+        run: |
+          if [ "${{ github.check_run.conclusion }}" == 'success' ]; then
+            echo "Third-party check passed, proceed with deployment"
+          else
+            echo "Third-party check failed, stop workflow"
+          fi
