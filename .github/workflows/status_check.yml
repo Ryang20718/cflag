@@ -14,6 +14,9 @@ jobs:
           echo "Check Name: ${{ github.event.check_run.name }}"
           echo "Status: ${{ github.event.check_run.conclusion }}"
           echo "PR Number: ${{ github.event.check_suite.pull_requests[0].number }}"
-    
+
+      - name: Add comment to pull request
+        run: gh api repos/${{ github.repository }}/issues/${{ github.event.check_suite.pull_requests[0].number }}/comments -f body='Codecov check did not pass. Please review the results.'
+
       - name: Print full event payload
         run: echo '${{ toJson(github.event) }}'
