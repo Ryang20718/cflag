@@ -16,6 +16,8 @@ jobs:
           echo "PR Number: ${{ github.event.check_run.check_suite.pull_requests[0].number }}"
     
       - name: Check if comment exists and add if missing
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           COMMENT_BODY="Automated message: This PR is being processed."
           PR_NUMBER=${{ github.event.check_run.check_suite.pull_requests[0].number }}
