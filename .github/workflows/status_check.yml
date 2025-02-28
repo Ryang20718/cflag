@@ -1,11 +1,14 @@
-name: Check Run Trigger
+name: Codecov PR Status Checks
 
+# https://docs.github.com/en/webhooks/webhook-events-and-payloads#check_run
+# This workflow is triggered for each 3rd party check run completion.
+# in this workflow, we post a comment to the PR with useful guidance on how to navigate the failed check
 on:
   check_run:
     types: [completed]
 
 jobs:
-  check_run_job:
+  check_codecov:
     if: contains(github.event.check_run.name, 'codecov') && github.event.check_run.conclusion != 'success'
     runs-on: ubuntu-latest
     steps:
@@ -14,12 +17,31 @@ jobs:
           echo "Check Name: ${{ github.event.check_run.name }}"
           echo "Status: ${{ github.event.check_run.conclusion }}"
           echo "PR Number: ${{ github.event.check_run.check_suite.pull_requests[0].number }}"
-    
+
       - name: Check if comment exists and add if missing
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          COMMENT_BODY="Automated message: This PR is being processed."
+          COMMENT_BODY="
+          Codecov status check has failed.
+
+          <details>
+            <summary>If you have not yet logged in to codecov</summary>
+            Please do so via [here](test).
+          </details>
+
+          <details>
+            <summary>If codecov project/patch status checks are failing, here are some tips to resolve those errors!</summary>
+            Please ensure your changes are tested :smile.
+
+            There are some known limitations with codecov documented
+            [here](test).
+
+            If you believe this is a false positive and none of the suggestions above help, please add the label `codecov-bypass` to the PR.
+
+            For any additional features/concerns, please reach out to #tools-help on slack!
+          </details>
+          "
           PR_NUMBER=${{ github.event.check_run.check_suite.pull_requests[0].number }}
           REPO=${{ github.repository }}
 
@@ -33,6 +55,3 @@ jobs:
             echo "Adding comment to PR..."
             gh pr comment $PR_NUMBER --repo $REPO --body "$COMMENT_BODY"
           fi
-
-      - name: Print full event payload
-        run: echo '${{ toJson(github.event) }}'
