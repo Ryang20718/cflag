@@ -1,0 +1,15 @@
+name: Check Run Trigger
+
+on:
+  check_run:
+  check_suite:
+
+jobs:
+  check_run_job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print event details
+        run: echo "Triggered by check_run event for ${{ github.event.check_run.name }} with status ${{ github.event.check_run.conclusion }}"
+      
+      - name: Print full event payload
+        run: echo '${{ toJson(github.event) }}'
