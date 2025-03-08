@@ -28,8 +28,11 @@ runs:
         FILES: ${{ inputs.files }}
         FLAG: ${{ inputs.flag }}
       run: |
+        set -x
         shared_flags="--auto-load-params-from=GithubActions --codecov-yml-path=.codecov.yml -v"
         sha="${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}"
+        git -c protocol.version=2 fetch -q --no-tags --no-recurse-submodules --depth=2 origin "${sha}"
+        merge_base_sha=$(git rev-parse HEAD^1)
         file=()
         for f in ${FILES}; do
           file+=("--file=${f}")
@@ -63,7 +66,7 @@ runs:
             ${shared_flags} \
             pr-base-picking \
             --slug="${{ github.repository }}" \
-            --base-sha="${{ github.event.pull_request.base.sha }}" \
+            --base-sha="${merge_base_sha}" \
             --service github \
             -t ${CODECOV_TOKEN}
         fi
