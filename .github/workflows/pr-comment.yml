@@ -1,0 +1,19 @@
+# name: check-comment
+# on:
+#   issue_comment:
+#     types: [created, deleted]
+
+# jobs:
+#   _check-release-notes-labels:
+#     runs-on: ubuntu-latest
+#     timeout-minutes: 5
+#     if: "github.event_name == 'pull_request'" # trunk-merge creates a push branch which cannot check for labels
+#     steps:
+#       - name: Checkout branch
+#         uses: actions/checkout@v4
+#         with:
+#           lfs: true
+          
+#       - name: hello
+#         run: echo 'hello'
+#         shell: bash
