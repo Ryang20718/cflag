@@ -55,8 +55,8 @@ jobs:
             echo "Adding comment to PR..."
             gh pr comment $PR_NUMBER --repo $REPO --body "$COMMENT_BODY"
           fi
-
-  codecov_status_checks: #  || contains(github.event.check_run.name, 'test')
+ #  || contains(github.event.check_run.name, 'test')
+  codecov_status_checks:
     if: contains(github.event.check_run.name, 'codecov')
     runs-on: ubuntu-latest
     steps:
@@ -71,7 +71,6 @@ jobs:
             echo "pr_number=${{ github.event.check_run.check_suite.pull_requests[0].number }}" >> $GITHUB_ENV
             echo "check_run_name=${{ github.event.check_run.name }}" >> $GITHUB_ENV
             echo "conclusion=${{ github.event.check_run.conclusion }}" >> $GITHUB_ENV
-
             LABELS=$(gh api repos/${{ github.repository }}/issues/${{ github.event.check_run.check_suite.pull_requests[0].number }}/labels --jq '.[].name')
             if echo "$LABELS" | grep -q "codecov-bypass"; then
               echo "Label 'codecov-bypass' found, setting status to success."
