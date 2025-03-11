@@ -76,7 +76,7 @@ jobs:
           STATUS="pending"
           if [ "$CONCLUSION" == "success" ]; then
             STATUS="success"
-          else; then
+          else
             STATUS="failure"
           fi
 
