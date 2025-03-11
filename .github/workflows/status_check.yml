@@ -112,9 +112,9 @@ jobs:
           fi
 
           gh api repos/${{ github.repository }}/statuses/${{ env.commit_sha }} \
-            -f state="$status" \
-            -f context="$status_check_name" \
-            -f description="$status" \
+            -f state="${{ env.status }}" \
+            -f context="${{ status_check_name }}" \
+            -f description="${{ status }}" \
             -f target_url="https://github.com/${{ github.repository }}/pull/${{ env.pr_number }}"
 
       - name: Bypass Codecov Status Check
@@ -124,8 +124,8 @@ jobs:
         run: |
           gh api repos/${{ github.repository }}/statuses/${{ env.commit_sha }} \
             -f state="success" \
-            -f context="$status_check_name" \
-            -f description="bypassed $status_check_name" \
+            -f context="${{ status_check_name }}" \
+            -f description="bypassed "${{ status }}" \
             -f target_url="https://github.com/${{ github.repository }}/pull/${{ env.pr_number }}"
 
 
