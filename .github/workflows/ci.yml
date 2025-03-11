@@ -10,6 +10,13 @@ defaults:
     shell: bash
 
 jobs:
+  cpu-test:
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    steps:
+      - name: Checkout repository
+        run: exit 0
+
   upload-metrics:
     runs-on: ubuntu-latest
     if: ${{ always() }}
