@@ -60,74 +60,74 @@ jobs:
     if: contains(github.event.check_run.name, 'codecov')
     runs-on: ubuntu-latest
     steps:
-      - name: Set Codecov Status Check to Pending on New Uploads
-        if: contains(github.event.check_run.name, 'test')
+      - name: Set Shared Variables
+        id: pr_info
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "commit_sha=${{ github.event.check_run.check_suite.pull_requests[0].head.sha }}" >> $GITHUB_ENV
+          echo "pr_number=${{ github.event.check_run.check_suite.pull_requests[0].number }}" >> $GITHUB_ENV
+          echo "check_run_name=${{ github.event.check_run.name }}" >> $GITHUB_ENV
+          echo "conclusion=${{ github.event.check_run.conclusion }}" >> $GITHUB_ENV
+          LABELS=$(gh api repos/${{ github.repository }}/issues/${{ github.event.check_run.check_suite.pull_requests[0].number }}/labels --jq '.[].name')
+          if echo "$LABELS" | grep -q "codecov-bypass"; then
+            echo "Label 'codecov-bypass' found, setting status to success."
+            codecov_bypass=true >> $GITHUB_ENV
+          fi
+
+      # - name: Set Codecov Status Checks to Pending
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   if: ${{ steps.pr_info.outputs.codecov_bypass }} != 'true'
+      #   run: |
+      #     status_check_names="codecov/unit/patch codecov/unit/project"
+      #     for status_check_name in $status_check_names; do
+      #       gh api repos/${{ github.repository }}/statuses/${{ steps.pr_info.commit_sha}} \
+      #       -H "Authorization: token $GITHUB_TOKEN" \
+      #       -H "Accept: application/vnd.github.v3+json" \
+      #       -X POST \
+      #       -f state="pending" \
+      #       -f context="$status_check_name" \
+      #       -f description="$status_check_name" \
+      #       -f target_url="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+      #     done
+      #   CONCLUSION=${{ github.event.check_run.conclusion }}
+
+      # we set our own status check as codecov may suffer from api outages which should not block CI
+      - name: Set Codecov Status Check based on codecov status check
+        if: ${{ steps.pr_info.outputs.codecov_bypass }} != 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        - name: Set Shared Variables
-          id: pr_info
-          run: |
-            echo "commit_sha=${{ github.event.check_run.check_suite.pull_requests[0].head.sha }}" >> $GITHUB_ENV
-            echo "pr_number=${{ github.event.check_run.check_suite.pull_requests[0].number }}" >> $GITHUB_ENV
-            echo "check_run_name=${{ github.event.check_run.name }}" >> $GITHUB_ENV
-            echo "conclusion=${{ github.event.check_run.conclusion }}" >> $GITHUB_ENV
-            LABELS=$(gh api repos/${{ github.repository }}/issues/${{ github.event.check_run.check_suite.pull_requests[0].number }}/labels --jq '.[].name')
-            if echo "$LABELS" | grep -q "codecov-bypass"; then
-              echo "Label 'codecov-bypass' found, setting status to success."
-              codecov_bypass=true >> $GITHUB_ENV
-            fi
+        run: |
+          status="pending"
+          if [ "$${{ steps.pr_info.outputs.codecov_bypass }}" == "success" ]; then
+            status="success"
+          else
+            status="failure"
+          fi
 
-        # - name: Set Codecov Status Checks to Pending
-        #   env:
-        #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        #   if: ${{ steps.pr_info.outputs.codecov_bypass }} != 'true'
-        #   run: |
-        #     status_check_names="codecov/unit/patch codecov/unit/project"
-        #     for status_check_name in $status_check_names; do
-        #       gh api repos/${{ github.repository }}/statuses/${{ steps.pr_info.commit_sha}} \
-        #       -H "Authorization: token $GITHUB_TOKEN" \
-        #       -H "Accept: application/vnd.github.v3+json" \
-        #       -X POST \
-        #       -f state="pending" \
-        #       -f context="$status_check_name" \
-        #       -f description="$status_check_name" \
-        #       -f target_url="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-        #     done
-        #   CONCLUSION=${{ github.event.check_run.conclusion }}
+          gh api repos/${{ github.repository }}/statuses/${{ steps.pr_info.commit_sha}} \
+          -H "Authorization: token $GITHUB_TOKEN" \
+          -H "Accept: application/vnd.github.v3+json" \
+          -X POST \
+          -f state="$status" \
+          -f context="$status_check_name" \
+          -f description="bypassed $status_check_name" \
+          -f target_url="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
-        # we set our own status check as codecov may suffer from api outages which should not block CI
-        - name: Set Codecov Status Check based on codecov status check
-          if: ${{ steps.pr_info.outputs.codecov_bypass }} != 'true'
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          run: |
-            status="pending"
-            if [ "$${{ steps.pr_info.outputs.codecov_bypass }}" == "success" ]; then
-              status="success"
-            else
-              status="failure"
-            fi
-
+      - name: Bypass Codecov Status Check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        if: ${{ steps.pr_info.outputs.codecov_bypass }} == 'true'
+        run: |
             gh api repos/${{ github.repository }}/statuses/${{ steps.pr_info.commit_sha}} \
             -H "Authorization: token $GITHUB_TOKEN" \
             -H "Accept: application/vnd.github.v3+json" \
             -X POST \
-            -f state="$status" \
+            -f state="success" \
             -f context="$status_check_name" \
             -f description="bypassed $status_check_name" \
             -f target_url="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
-        - name: Bypass Codecov Status Check
-          if: ${{ steps.pr_info.outputs.codecov_bypass }} == 'true'
-          run: |
-              gh api repos/${{ github.repository }}/statuses/${{ steps.pr_info.commit_sha}} \
-              -H "Authorization: token $GITHUB_TOKEN" \
-              -H "Accept: application/vnd.github.v3+json" \
-              -X POST \
-              -f state="success" \
-              -f context="$status_check_name" \
-              -f description="bypassed $status_check_name" \
-              -f target_url="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-
-        - name: Print full event payload (formatted)
-          run: jq . "$GITHUB_EVENT_PATH"
+      - name: Print full event payload (formatted)
+        run: jq . "$GITHUB_EVENT_PATH"
