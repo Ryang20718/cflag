@@ -107,27 +107,23 @@ jobs:
           fi
 
           gh api repos/${{ github.repository }}/statuses/${{ steps.pr_info.commit_sha}} \
-          -H "Authorization: token $GITHUB_TOKEN" \
-          -H "Accept: application/vnd.github.v3+json" \
-          -X POST \
-          -f state="$status" \
-          -f context="$status_check_name" \
-          -f description="bypassed $status_check_name" \
-          -f target_url="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            -f state="$status" \
+            -f context="$status_check_name" \
+            -f description="$status" \
+            -f target_url="https://github.com/${{ github.repository }}/pull/${{ steps.pr_info.outputs.pr_number }}"
 
       - name: Bypass Codecov Status Check
         env:
           GH_TOKEN: ${{ github.token }}
         if: ${{ steps.pr_info.outputs.codecov_bypass }} == 'true'
         run: |
-            gh api repos/${{ github.repository }}/statuses/${{ steps.pr_info.commit_sha}} \
-            -H "Authorization: token $GITHUB_TOKEN" \
-            -H "Accept: application/vnd.github.v3+json" \
-            -X POST \
+          gh api repos/${{ github.repository }}/statuses/${{ steps.pr_info.commit_sha}} \
             -f state="success" \
             -f context="$status_check_name" \
             -f description="bypassed $status_check_name" \
-            -f target_url="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            -f target_url="https://github.com/${{ github.repository }}/pull/${{ steps.pr_info.outputs.pr_number }}"
+
 
       - name: Print full event payload (formatted)
+        if: always()
         run: jq . "$GITHUB_EVENT_PATH"
