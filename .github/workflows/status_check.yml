@@ -55,3 +55,32 @@ jobs:
             echo "Adding comment to PR..."
             gh pr comment $PR_NUMBER --repo $REPO --body "$COMMENT_BODY"
           fi
+
+  codecov_status_checks:
+    if: contains(github.event.check_run.name, 'codecov')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update Commit Status
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          SHA=${{ github.event.check_run.check_suite.pull_requests[0].head.sha }}
+          PR_NUMBER=${{ github.event.check_run.check_suite.pull_requests[0].number }}
+          CHECK_RUN_NAME=${{ github.event.check_run.name }}
+          CONCLUSION=${{ github.event.check_run.conclusion }}
+
+          echo "Check Run Name: $CHECK_RUN_NAME"
+          echo "Commit SHA: $SHA"
+          echo "Conclusion: $CONCLUSION"
+
+          STATUS="pending"
+          if [ "$CONCLUSION" == "success" ]; then
+            STATUS="success"
+          else; then
+            STATUS="failure"
+          fi
+
+          curl -X POST -H "Authorization: token $GITHUB_TOKEN" \
+               -H "Accept: application/vnd.github.v3+json" \
+               https://api.github.com/repos/${{ github.repository }}/statuses/$SHA \
+               -d "{\"state\":\"$STATUS\", \"context\":\"CI Status\", \"description\":\"Check Run: $CHECK_RUN_NAME\", \"target_url\":\"https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}"
