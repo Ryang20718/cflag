@@ -99,33 +99,33 @@ jobs:
 
       # we set our own status check as codecov may suffer from api outages which should not block CI
       - name: Set Codecov Status Check based on codecov status check
-        if: ${{ steps.pr_info.outputs.codecov_bypass }} != 'true'
+        if: env.codecov_bypass != 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           status="pending"
-          if [ "$${{ steps.pr_info.outputs.codecov_bypass }}" == "success" ]; then
+          if [ "$codecov_bypass" == "success" ]; then
             status="success"
           else
             status="failure"
           fi
 
-          gh api repos/${{ github.repository }}/statuses/${{ steps.pr_info.outputs.commit_sha}} \
+          gh api repos/${{ github.repository }}/statuses/$commit_sha \
             -f state="$status" \
             -f context="$status_check_name" \
             -f description="$status" \
-            -f target_url="https://github.com/${{ github.repository }}/pull/${{ steps.pr_info.outputs.pr_number }}"
+            -f target_url="https://github.com/${{ github.repository }}/pull/$pr_number"
 
       - name: Bypass Codecov Status Check
         env:
           GH_TOKEN: ${{ github.token }}
-        if: ${{ steps.pr_info.outputs.codecov_bypass }} == 'true'
+        if: env.codecov_bypass == 'true'
         run: |
-          gh api repos/${{ github.repository }}/statuses/${{ steps.pr_info.commit_sha}} \
+          gh api repos/${{ github.repository }}/statuses/$commit_sha \
             -f state="success" \
             -f context="$status_check_name" \
             -f description="bypassed $status_check_name" \
-            -f target_url="https://github.com/${{ github.repository }}/pull/${{ steps.pr_info.outputs.pr_number }}"
+            -f target_url="https://github.com/${{ github.repository }}/pull/$pr_number"
 
 
       - name: Print full event payload (formatted)
