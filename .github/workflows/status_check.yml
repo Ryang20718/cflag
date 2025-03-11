@@ -69,11 +69,15 @@ jobs:
           echo "pr_number=${{ github.event.check_run.check_suite.pull_requests[0].number }}" >> $GITHUB_ENV
           echo "check_run_name=${{ github.event.check_run.name }}" >> $GITHUB_ENV
           echo "conclusion=${{ github.event.check_run.conclusion }}" >> $GITHUB_ENV
+
           LABELS=$(gh api repos/${{ github.repository }}/issues/${{ github.event.check_run.check_suite.pull_requests[0].number }}/labels --jq '.[].name')
           if echo "$LABELS" | grep -q "codecov-bypass"; then
             echo "Label 'codecov-bypass' found, setting status to success."
-            codecov_bypass=true >> $GITHUB_ENV
+            echo "codecov_bypass=true" >> $GITHUB_ENV
+          else
+            echo "codecov_bypass=false" >> $GITHUB_ENV
           fi
+
 
       # - name: Set Codecov Status Checks to Pending
       #   env:
@@ -106,7 +110,7 @@ jobs:
             status="failure"
           fi
 
-          gh api repos/${{ github.repository }}/statuses/${{ steps.pr_info.commit_sha}} \
+          gh api repos/${{ github.repository }}/statuses/${{ steps.pr_info.outputs.commit_sha}} \
             -f state="$status" \
             -f context="$status_check_name" \
             -f description="$status" \
