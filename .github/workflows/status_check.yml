@@ -100,7 +100,7 @@ jobs:
 
       # we set our own status check as codecov may suffer from api outages which should not block CI
       - name: Set Codecov Status Check based on codecov status check
-        if: ${{ env.codecov_bypass != 'true' }}
+        if: ${{ env.codecov_bypass != 'true' && !contains(github.ref, 'trunk-merge') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -109,19 +109,19 @@ jobs:
             -f state="${{ env.conclusion }}" \
             -f context="_${{ env.check_run_name }}" \
             -f description="${{ env.codecov_description }}" \
-            -f target_url="https://github.com/${{ github.repository }}/pull/${{ env.pr_number }}"
+            -f target_url="https://github.com/${{ github.repository }}/commit/${{ env.commit_sha }}"
 
       - name: Bypass Codecov Status Check
         env:
           GH_TOKEN: ${{ github.token }}
-        if: ${{ env.codecov_bypass == 'true' }}
+        if: ${{ env.codecov_bypass == 'true' || contains(github.ref, 'trunk-merge') }}
         run: |
           set -x
           gh api repos/${{ github.repository }}/statuses/${{ env.commit_sha }} \
             -f state="success" \
             -f context="_${{ env.check_run_name }}" \
             -f description="bypassed ${{ env.check_run_name }}" \
-            -f target_url="https://github.com/${{ github.repository }}/pull/${{ env.pr_number }}"
+            -f target_url="https://github.com/${{ github.repository }}/commit/${{ env.commit_sha }}"
 
 
       - name: Print full event payload (formatted)
