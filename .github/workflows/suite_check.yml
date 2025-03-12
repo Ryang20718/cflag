@@ -20,6 +20,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -x
+          gh --help
           status_check_name="codecov_ci"
           runs=$(gh api ${{ github.event.check_suite.check_runs_url }})
 
