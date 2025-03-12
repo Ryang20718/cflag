@@ -5,7 +5,7 @@ name: Codecov PR Status Checks
 # in this workflow, we post a comment to the PR with useful guidance on how to navigate the failed check
 on:
   check_run:
-    types: [completed]
+    types: [rerequested, completed]
 
 jobs:
   check_codecov:
@@ -69,6 +69,7 @@ jobs:
           echo "pr_number=${{ github.event.check_run.check_suite.pull_requests[0].number }}" >> $GITHUB_ENV
           echo "check_run_name=${{ github.event.check_run.name }}" >> $GITHUB_ENV
           echo "conclusion=${{ github.event.check_run.conclusion }}" >> $GITHUB_ENV
+          echo "codecov_description=${{ github.event.check_run.output.title }}" >> $GITHUB_ENV
 
           LABELS=$(gh api repos/${{ github.repository }}/issues/${{ github.event.check_run.check_suite.pull_requests[0].number }}/labels --jq '.[].name')
           if echo "$LABELS" | grep -q "codecov-bypass"; then
@@ -107,7 +108,7 @@ jobs:
           gh api repos/${{ github.repository }}/statuses/${{ env.commit_sha }} \
             -f state="${{ env.conclusion }}" \
             -f context="_${{ env.check_run_name }}" \
-            -f description="${{ env.conclusion }}" \
+            -f description="${{ env.codecov_description }}" \
             -f target_url="https://github.com/${{ github.repository }}/pull/${{ env.pr_number }}"
 
       - name: Bypass Codecov Status Check
@@ -115,6 +116,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         if: ${{ env.codecov_bypass == 'true' }}
         run: |
+          set -x
           gh api repos/${{ github.repository }}/statuses/${{ env.commit_sha }} \
             -f state="success" \
             -f context="_${{ env.check_run_name }}" \
