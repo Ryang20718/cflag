@@ -1,16 +1,70 @@
-name: Codecov PR SUITE Status Checks
+name: CI Check Suite
 
-# https://docs.github.com/en/webhooks/webhook-events-and-payloads#check_run
-# This workflow is triggered for each 3rd party check run completion.
-# in this workflow, we post a comment to the PR with useful guidance on how to navigate the failed check
+# https://docs.github.com/en/webhooks/webhook-events-and-payloads#check_suite
+# We rely on codecov status checks to determine if codecov status checks have failed
+# However, sometimes codecov status checks are delayed and if we depend on 3rd party servers
+# we may not get the status in time. Thus, create a status check ourselves which we can easily bypass
 on:
   check_suite:
     types: [completed]
 
 jobs:
-  check_codecov:
+  check_codecov_pr:
+    # only run this for pull requests with codecov
+    # trunk merge branches are push events
+    if: ${{ github.event.check_suite.app.name == 'Codecov' }}
     runs-on: ubuntu-latest
     steps:
+      - name: Set Shared Variables
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          status_check_name="codecov_ci"
+          runs=$(gh api ${{ github.event.check_suite.check_runs_url }})
+
+          # codecov will return either "success" or "failure"
+          output=$(echo "$runs" | jq -r '.check_runs[] | select((.name == "codecov/patch" or .name == "codecov/patch/torchscript_input_files") and .conclusion == "failure") | "\(.name): \(.conclusion)"')
+          if [ -n "$output" ]; then
+            echo "conclusion=failure" >> $GITHUB_ENV
+          else
+            echo "conclusion=success" >> $GITHUB_ENV
+          fi
+          echo "commit_sha=${{ github.event.check_suite.pull_requests[0].head.sha }}" >> $GITHUB_ENV
+          echo "pr_number=${{ github.event.check_suite.pull_requests[0].number }}" >> $GITHUB_ENV
+
+          LABELS=$(gh api repos/${{ github.repository }}/issues/${{ github.event.check_run.check_suite.pull_requests[0].number }}/labels --jq '.[].name')
+          if echo "$LABELS" | grep -q "codecov-bypass"; then
+            echo "Label 'codecov-bypass' found, setting status to success."
+            echo "codecov_bypass=true" >> $GITHUB_ENV
+          else
+            echo "codecov_bypass=false" >> $GITHUB_ENV
+          fi
+
+      - name: Set Codecov Status Check
+        if: ${{ env.codecov_bypass != 'true' && !contains(github.ref, 'trunk-merge') }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -x
+          gh api repos/${{ github.repository }}/statuses/${{ env.commit_sha }} \
+            -f state="${{ env.conclusion }}" \
+            -f context="${{ env.status_check_name }}" \
+            -f description="internal check. please review codecov status checks" \
+            -f target_url="https://github.com/${{ github.repository }}/commit/${{ env.commit_sha }}"
+
+      - name: Bypass Codecov Status Check
+        if: ${{ env.codecov_bypass != 'true' || contains(github.ref, 'trunk-merge') }}
+        run: |
+          set -x
+          gh api repos/${{ github.repository }}/statuses/${{ env.commit_sha }} \
+            -f state="success" \
+            -f context="${{ env.check_run_name }}" \
+            -f description="bypassed codecov status checks" \
+            -f target_url="https://github.com/${{ github.repository }}/commit/${{ env.commit_sha }}"
+
+
       - name: Print full event payload (formatted)
         if: always()
         run: jq . "$GITHUB_EVENT_PATH"
+
+      
