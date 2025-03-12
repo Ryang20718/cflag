@@ -106,18 +106,18 @@ jobs:
           set -x
           gh api repos/${{ github.repository }}/statuses/${{ env.commit_sha }} \
             -f state="${{ env.conclusion }}" \
-            -f context="${{ env.check_run_name }}" \
+            -f context="_${{ env.check_run_name }}" \
             -f description="${{ env.conclusion }}" \
             -f target_url="https://github.com/${{ github.repository }}/pull/${{ env.pr_number }}"
 
       - name: Bypass Codecov Status Check
         env:
           GH_TOKEN: ${{ github.token }}
-        if: ${{ env.codecov_bypass }} == 'true'
+        if: ${{ env.codecov_bypass == 'true' }}
         run: |
           gh api repos/${{ github.repository }}/statuses/${{ env.commit_sha }} \
             -f state="success" \
-            -f context="${{ env.check_run_name }}" \
+            -f context="_${{ env.check_run_name }}" \
             -f description="bypassed ${{ env.check_run_name }}" \
             -f target_url="https://github.com/${{ github.repository }}/pull/${{ env.pr_number }}"
 
