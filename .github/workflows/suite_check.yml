@@ -20,8 +20,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -x
-          gh --help
-          status_check_name="codecov_ci"
+          echo "status_check_name=codecov_ci" >> $GITHUB_ENV
+          echo "commit_sha=${{ github.event.check_suite.pull_requests[0].head.sha }}" >> $GITHUB_ENV
           runs=$(gh api ${{ github.event.check_suite.check_runs_url }})
 
           # codecov will return either "success" or "failure"
@@ -31,10 +31,8 @@ jobs:
           else
             echo "conclusion=success" >> $GITHUB_ENV
           fi
-          echo "commit_sha=${{ github.event.check_suite.pull_requests[0].head.sha }}" >> $GITHUB_ENV
-          echo "pr_number=${{ github.event.check_suite.pull_requests[0].number }}" >> $GITHUB_ENV
 
-          LABELS=$(gh api repos/${{ github.repository }}/issues/${{ github.event.check_run.check_suite.pull_requests[0].number }}/labels --jq '.[].name')
+          LABELS=$(gh api repos/${{ github.repository }}/issues/${{ github.event.check_suite.pull_requests[0].number }}/labels --jq '.[].name')
           if echo "$LABELS" | grep -q "codecov-bypass"; then
             echo "Label 'codecov-bypass' found, setting status to success."
             echo "codecov_bypass=true" >> $GITHUB_ENV
