@@ -97,18 +97,18 @@ jobs:
       #     done
       #   CONCLUSION=${{ github.event.check_run.conclusion }}
 
-      # we set our own status check as codecov may suffer from api outages which should not block CI
-      - name: Set Codecov Status Check based on codecov status check
-        if: ${{ env.codecov_bypass != 'true' && !contains(github.ref, 'trunk-merge') }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          set -x
-          gh api repos/${{ github.repository }}/statuses/${{ env.commit_sha }} \
-            -f state="${{ env.conclusion }}" \
-            -f context="wrapper_${{ env.check_run_name }}" \
-            -f description="internal check. please review codecov status checks" \
-            -f target_url="https://github.com/${{ github.repository }}/commit/${{ env.commit_sha }}"
+      # # we set our own status check as codecov may suffer from api outages which should not block CI
+      # - name: Set Codecov Status Check based on codecov status check
+      #   if: ${{ env.codecov_bypass != 'true' && !contains(github.ref, 'trunk-merge') }}
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   run: |
+      #     set -x
+      #     gh api repos/${{ github.repository }}/statuses/${{ env.commit_sha }} \
+      #       -f state="${{ env.conclusion }}" \
+      #       -f context="${{ env.check_run_name }}" \
+      #       -f description="internal check. please review codecov status checks" \
+      #       -f target_url="https://github.com/${{ github.repository }}/commit/${{ env.commit_sha }}"
 
       - name: Bypass Codecov Status Check
         env:
@@ -118,7 +118,7 @@ jobs:
           set -x
           gh api repos/${{ github.repository }}/statuses/${{ env.commit_sha }} \
             -f state="success" \
-            -f context="wrapper_${{ env.check_run_name }}" \
+            -f context="${{ env.check_run_name }}" \
             -f description="bypassed ${{ env.check_run_name }}" \
             -f target_url="https://github.com/${{ github.repository }}/commit/${{ env.commit_sha }}"
 
