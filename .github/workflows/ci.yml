@@ -53,6 +53,19 @@ jobs:
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
+      - name: Set Codecov Status Check to Pending
+        if: ${{ env.codecov_bypass == 'true' || contains(github.ref, 'trunk-merge') }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -x
+          commit_sha=${{ github.event_name == 'pull_request' && github.event.check_suite.pull_requests[0].head.sha || github.sha }}
+          gh api repos/${{ github.repository }}/statuses/${commit_sha} \
+            -f state="pending" \
+            -f context="${codecov/ci}" \
+            -f description="waiting for codecov results" \
+            -f target_url="https://github.com/${{ github.repository }}/commit/${commit_sha}"
+
       # - uses: codecov/codecov-action@v4
       #   with:
       #     file: torchscript_input_files_coverage.dat
