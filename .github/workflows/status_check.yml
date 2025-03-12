@@ -57,7 +57,7 @@ jobs:
           fi
  #  || contains(github.event.check_run.name, 'test')
   codecov_status_checks:
-    if: contains(github.event.check_run.name, 'codecov')
+    # if: contains(github.event.check_run.name, 'codecov')
     runs-on: ubuntu-latest
     steps:
       - name: Set Shared Variables
