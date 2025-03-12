@@ -1,0 +1,14 @@
+name: Codecov PR Status Checks
+
+# https://docs.github.com/en/webhooks/webhook-events-and-payloads#check_run
+# This workflow is triggered for each 3rd party check run completion.
+# in this workflow, we post a comment to the PR with useful guidance on how to navigate the failed check
+on:
+  check_suite:
+    types: [completed]
+
+jobs:
+  check_codecov:
+    - name: Print full event payload (formatted)
+      if: always()
+      run: jq . "$GITHUB_EVENT_PATH"
