@@ -9,6 +9,8 @@ on:
 
 jobs:
   check_codecov:
-    - name: Print full event payload (formatted)
-      if: always()
-      run: jq . "$GITHUB_EVENT_PATH"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print full event payload (formatted)
+        if: always()
+        run: jq . "$GITHUB_EVENT_PATH"
