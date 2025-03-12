@@ -20,6 +20,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -x
+          echo ${{github.event_name}}
           echo ${{github.ref}}
           echo "status_check_name=codecov/ci" >> $GITHUB_ENV
           echo "commit_sha=${{ github.event.check_suite.pull_requests[0].head.sha || github.sha }}" >> $GITHUB_ENV
