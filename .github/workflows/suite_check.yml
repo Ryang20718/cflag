@@ -1,4 +1,4 @@
-name: Codecov PR Status Checks
+name: Codecov PR SUITE Status Checks
 
 # https://docs.github.com/en/webhooks/webhook-events-and-payloads#check_run
 # This workflow is triggered for each 3rd party check run completion.
