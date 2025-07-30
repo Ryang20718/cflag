@@ -8,11 +8,11 @@ defaults:
     shell: bash
 
 jobs:
-debug-payload:
-  runs-on: ubuntu-latest
-  steps:
-    - name: Print entire payload
-      run: |
-        echo "Event: ${{ github.event_name }}"
-        echo "Full payload:"
-        echo '${{ toJSON(github.event) }}' | jq '.'
+  debug-payload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print entire payload
+        run: |
+          echo "Event: ${{ github.event_name }}"
+          echo "Full payload:"
+          echo '${{ toJSON(github.event) }}' | jq '.'
