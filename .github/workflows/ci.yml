@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - user/ryang/fail_now
+      - user/ryang/fail_now2
 
 defaults:
   run:
