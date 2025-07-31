@@ -10,6 +10,12 @@ defaults:
   run:
     shell: bash
 
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: read # required for reading PR metadata
+  actions: write # needed for cancelling PR runs
+
 jobs:
   cpu-test:
     runs-on: ubuntu-latest
