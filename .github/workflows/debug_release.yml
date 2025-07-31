@@ -32,7 +32,7 @@ jobs:
       - name: Get Simulated Squash Commit
         id: get_sha
         run: |
-          set -e # Exit immediately if a command fails
+          set -ex # Exit immediately if a command fails
           # Define branch names from the GitHub context for clarity
           TARGET_BRANCH=${{ github.base_ref }}
           PR_BRANCH=${{ github.head_ref }}
