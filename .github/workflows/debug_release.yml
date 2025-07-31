@@ -18,4 +18,4 @@ jobs:
           echo '${{ toJSON(github.event) }}' | jq '.'
       - name: Print head sha
         run: |
-          echo "Event: ${{ github.event.head.sha }}"
+          echo "Event: ${{ github.event.pull_request.head.sha }}"
