@@ -16,3 +16,6 @@ jobs:
           echo "Event: ${{ github.event_name }}"
           echo "Full payload:"
           echo '${{ toJSON(github.event) }}' | jq '.'
+      - name: Print head sha
+        run: |
+          echo "Event: ${{ github.event.head.sha }}"
