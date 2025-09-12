@@ -16,7 +16,13 @@ jobs:
     if: ${{ always() }}
     steps:
       - name: Checkout repository
-        run: exit 0
+        uses: actions/checkout@v4
+
+      - name: get diff
+        run: |
+          git fetch origin ${GITHUB_BASE_REF}
+          git fetch origin ${GITHUB_HEAD_REF}
+          git diff origin/${GITHUB_BASE_REF}...origin/${GITHUB_HEAD_REF}
 
   upload-metrics:
     runs-on: ubuntu-latest
