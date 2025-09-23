@@ -1,71 +1,112 @@
 name: ci
 on:
   pull_request:
-  push:
-    branches:
-      - main
-      - user/ryang/fail_now2
+  # push:
+  #   branches:
+  #     - main
+  #     - user/ryang/fail_now2
 
 defaults:
   run:
     shell: bash
 
+permissions:
+  contents: write
+  # pull_requests: write
+  pages: write
+  id-token: write
+
 jobs:
   cpu-test:
-    runs-on: ubuntu-latest
-    if: ${{ always() }}
-    steps:
-      - name: Checkout repository
-        run: exit 0
-
-  upload-metrics:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     if: ${{ always() }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      # - name: Deploy
+      #   uses: peaceiris/actions-gh-pages@v4
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     publish_dir: ./static_site
+
+      - name: Prepare Artifact in a "pr-NUMBER" Folder
+        run: |
+          # 1. Create a temporary staging directory. This will become the root of your site.
+          mkdir -p /tmp/artifact_root
+
+          # 2. Create your target folder inside the staging directory.
+          #    Example: /tmp/artifact_root/pr-123
+          PR_DIR="/tmp/artifact_root/pr-${{ github.event.number }}"
+          mkdir -p $PR_DIR
+
+          # 3. Copy your website's content INTO that target folder.
+          cp -r static_site/* $PR_DIR/
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: "/tmp/artifact_root"
+          retention-days: 7
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  # upload-metrics:
+  #   runs-on: ubuntu-latest
+  #   if: ${{ always() }}
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
           
-      - name: upload coverage via cli
-        if: "github.event_name == 'pull_request'"
-        uses: ./.github/actions/coverage
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: onboard_av_binary_coverage.dat
-          flag: onboard_av_binary
+  #     - name: upload coverage via cli
+  #       if: "github.event_name == 'pull_request'"
+  #       uses: ./.github/actions/coverage
+  #       with:
+  #         token: ${{ secrets.CODECOV_TOKEN }}
+  #         files: onboard_av_binary_coverage.dat
+  #         flag: onboard_av_binary
 
-      - name: upload coverage via cli
-        if: "github.event_name == 'pull_request'"
-        uses: ./.github/actions/coverage
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: torchscript_input_files_coverage.dat
-          flag: torchscript_input_files
+  #     - name: upload coverage via cli
+  #       if: "github.event_name == 'pull_request'"
+  #       uses: ./.github/actions/coverage
+  #       with:
+  #         token: ${{ secrets.CODECOV_TOKEN }}
+  #         files: torchscript_input_files_coverage.dat
+  #         flag: torchscript_input_files
 
-      - name: Skip Codecov Status Checks
-        if: "github.event_name == 'push'"
-        run: |
-          curl --retry 3 \
-            --output codecov \
-            "https://cli.codecov.io/latest/linux/codecov"
-          chmod +x codecov
-          ./codecov -v create-commit -t ${{ secrets.CODECOV_TOKEN }} -C ${{ github.event.pull_request.head.sha }}
-          ./codecov -v create-report -t ${{ secrets.CODECOV_TOKEN }} -C ${{ github.event.pull_request.head.sha }}
-          ./codecov -v empty-upload -t ${{ secrets.CODECOV_TOKEN }} -C ${{ github.event.pull_request.head.sha }} --force
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+  #     - name: Skip Codecov Status Checks
+  #       if: "github.event_name == 'push'"
+  #       run: |
+  #         curl --retry 3 \
+  #           --output codecov \
+  #           "https://cli.codecov.io/latest/linux/codecov"
+  #         chmod +x codecov
+  #         ./codecov -v create-commit -t ${{ secrets.CODECOV_TOKEN }} -C ${{ github.event.pull_request.head.sha }}
+  #         ./codecov -v create-report -t ${{ secrets.CODECOV_TOKEN }} -C ${{ github.event.pull_request.head.sha }}
+  #         ./codecov -v empty-upload -t ${{ secrets.CODECOV_TOKEN }} -C ${{ github.event.pull_request.head.sha }} --force
+  #       env:
+  #         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
-      - name: Set Codecov Status Check to Pending
-        if: ${{ env.codecov_bypass == 'true' || contains(github.ref, 'trunk-merge') }}
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -x
-          commit_sha=${{ github.event_name == 'pull_request' && github.event.check_suite.pull_requests[0].head.sha || github.sha }}
-          gh api repos/${{ github.repository }}/statuses/${commit_sha} \
-            -f state="pending" \
-            -f context="${codecov/ci}" \
-            -f description="waiting for codecov results" \
-            -f target_url="https://github.com/${{ github.repository }}/commit/${commit_sha}"
+  #     - name: Set Codecov Status Check to Pending
+  #       if: ${{ env.codecov_bypass == 'true' || contains(github.ref, 'trunk-merge') }}
+  #       env:
+  #         GH_TOKEN: ${{ github.token }}
+  #       run: |
+  #         set -x
+  #         commit_sha=${{ github.event_name == 'pull_request' && github.event.check_suite.pull_requests[0].head.sha || github.sha }}
+  #         gh api repos/${{ github.repository }}/statuses/${commit_sha} \
+  #           -f state="pending" \
+  #           -f context="${codecov/ci}" \
+  #           -f description="waiting for codecov results" \
+  #           -f target_url="https://github.com/${{ github.repository }}/commit/${commit_sha}"
 
       # - uses: codecov/codecov-action@v4
       #   with:
