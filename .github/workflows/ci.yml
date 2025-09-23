@@ -1,0 +1,100 @@
+name: ci
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - user/ryang/fail_now2
+
+defaults:
+  run:
+    shell: bash
+
+permissions:
+  contents: write
+  # pull_requests: write
+
+jobs:
+  cpu-test:
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: ALLURE REPORT - GH Pages Push - SAME REPO
+        uses: PavanMudigonda/html-reporter-github-pages@v1.4
+        with:
+          test_results: static_site
+          keep_reports: 20
+          gh_pages: gh_pages
+          subfolder: docs
+          tool_name: ${{ github.event_number }}
+          workflow_name: ${{ github.workflow }} # Level 3 Folder Structure you like
+          token: ${{ secrets.GITHUB_TOKEN }} # Please note we need GitHub Person Access Token to perform gh pages deploy
+
+  upload-metrics:
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+          
+      - name: upload coverage via cli
+        if: "github.event_name == 'pull_request'"
+        uses: ./.github/actions/coverage
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: onboard_av_binary_coverage.dat
+          flag: onboard_av_binary
+
+      - name: upload coverage via cli
+        if: "github.event_name == 'pull_request'"
+        uses: ./.github/actions/coverage
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: torchscript_input_files_coverage.dat
+          flag: torchscript_input_files
+
+      - name: Skip Codecov Status Checks
+        if: "github.event_name == 'push'"
+        run: |
+          curl --retry 3 \
+            --output codecov \
+            "https://cli.codecov.io/latest/linux/codecov"
+          chmod +x codecov
+          ./codecov -v create-commit -t ${{ secrets.CODECOV_TOKEN }} -C ${{ github.event.pull_request.head.sha }}
+          ./codecov -v create-report -t ${{ secrets.CODECOV_TOKEN }} -C ${{ github.event.pull_request.head.sha }}
+          ./codecov -v empty-upload -t ${{ secrets.CODECOV_TOKEN }} -C ${{ github.event.pull_request.head.sha }} --force
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Set Codecov Status Check to Pending
+        if: ${{ env.codecov_bypass == 'true' || contains(github.ref, 'trunk-merge') }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -x
+          commit_sha=${{ github.event_name == 'pull_request' && github.event.check_suite.pull_requests[0].head.sha || github.sha }}
+          gh api repos/${{ github.repository }}/statuses/${commit_sha} \
+            -f state="pending" \
+            -f context="${codecov/ci}" \
+            -f description="waiting for codecov results" \
+            -f target_url="https://github.com/${{ github.repository }}/commit/${commit_sha}"
+
+      # - uses: codecov/codecov-action@v4
+      #   with:
+      #     file: torchscript_input_files_coverage.dat
+      #     flags: torchscript_input_files
+      #     verbose: true
+      #     token: ${{ secrets.CODECOV_TOKEN }}
+      #     codecov_yml_path: .codecov.yml
+
+      # - uses: codecov/codecov-action@v4
+      #   with:
+      #     file: onboard_av_binary_coverage.dat
+      #     flags: onboard_av_binary
+      #     verbose: true
+      #     token: ${{ secrets.CODECOV_TOKEN }}
+      #     codecov_yml_path: .codecov.yml
+
