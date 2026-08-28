@@ -23,5 +23,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Run ${{ matrix.job }}
-        uses: ./.github/actions/${{ matrix.job }}
+      - name: Run Build
+        if: matrix.job == 'build'
+        uses: ./.github/actions/build
+
+      - name: Run CPU Test
+        if: matrix.job == 'cpu-test'
+        uses: ./.github/actions/cpu-test
+
+      - name: Run GPU Test
+        if: matrix.job == 'gpu-test'
+        uses: ./.github/actions/gpu-test
