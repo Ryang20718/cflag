@@ -13,11 +13,17 @@ permissions:
 
 jobs:
   ci:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: true
       matrix:
-        job: [build, cpu-test, gpu-test]
+        include:
+          - job: build
+            os: ubuntu-latest
+          - job: cpu-test
+            os: ubuntu-24.04
+          - job: gpu-test
+            os: ubuntu-latest
     name: ${{ matrix.job }}
     steps:
       - name: Checkout repository
