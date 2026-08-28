@@ -92,7 +92,7 @@ jobs:
 
       - name: Run import check
         run: |
-          python3 -c "import time;import random; print(time.time()); time.sleep(random.randint(1, 60)); print(time.time())"
+          python3 -c "import time;import random; print(time.time()); time.sleep(random.randint(1, 15)); print(time.time())"
           exit 1
 
       - name: Cancel workflow on failure
