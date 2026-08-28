@@ -19,5 +19,5 @@ runs:
     - name: Run import check
       shell: bash
       run: |
-        python3 -c "import time;import random; print(time.time()); time.sleep(random.randint(1, 15)); print(time.time())"
+        python3 -c "import time;import random; print(time.time()); time.sleep(random.randint(10, 15)); print(time.time())"
         exit 1
