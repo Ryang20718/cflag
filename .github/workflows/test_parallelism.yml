@@ -99,4 +99,7 @@ jobs:
         if: failure()
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh run cancel ${{ github.run_id }}
+        run: |
+          gh run cancel ${{ github.run_id }}
+          sleep 10
+          exit 1
