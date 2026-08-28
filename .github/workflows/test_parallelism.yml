@@ -8,6 +8,7 @@ defaults:
 
 permissions:
   contents: write
+  actions: write
   # pull_requests: write
   pages: write
   id-token: write
