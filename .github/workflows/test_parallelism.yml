@@ -14,16 +14,23 @@ permissions:
 jobs:
   ci:
     runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
     strategy:
       fail-fast: true
       matrix:
         include:
           - job: build
             os: ubuntu-latest
+            container: null
           - job: cpu-test
             os: ubuntu-24.04
+            container: null
           - job: gpu-test
             os: ubuntu-latest
+            container:
+              image: ubuntu:22.04
+              volumes:
+                - /dev/shm:/dev/shm:rw,nosuid,nodev,exec
     name: ${{ matrix.job }}
     steps:
       - name: Checkout repository
