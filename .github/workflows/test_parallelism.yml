@@ -51,6 +51,7 @@ jobs:
   strategy:
     needs: [ci]
     runs-on: ubuntu-latest
+    if: always()
     steps:
       - name: Fail
         run: |
