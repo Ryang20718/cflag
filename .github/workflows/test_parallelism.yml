@@ -1,0 +1,63 @@
+name: ci
+on:
+  pull_request:
+
+defaults:
+  run:
+    shell: bash
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  ci:
+    runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - job: build
+            os: ubuntu-latest
+            container: null
+          - job: cpu-test
+            os: ubuntu-24.04
+            container: null
+          - job: gpu-test
+            os: ubuntu-latest
+            container:
+              image: ubuntu:22.04
+              volumes:
+                - /dev/shm:/dev/shm:rw,nosuid,nodev,exec
+    name: ${{ matrix.job }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Build
+        if: matrix.job == 'build'
+        uses: ./.github/actions/build
+
+      - name: Run CPU Test
+        if: matrix.job == 'cpu-test'
+        uses: ./.github/actions/cpu-test
+
+      - name: Run GPU Test
+        if: matrix.job == 'gpu-test'
+        uses: ./.github/actions/gpu-test
+
+  strategy:
+    needs: [ci]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Fail
+        run: |
+          if [ "${{ needs.ci.result }}" != "success" ]; then
+            echo "failed"
+            exit 1
+          else
+            exit 0
+          fi
